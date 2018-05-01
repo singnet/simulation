@@ -1,0 +1,825 @@
+{ 
+
+	"parameters":{
+		"num_agents":100,
+
+		"sign_size":8, 
+		"num_blocks":10,
+		"item_size": 8, 
+		"num_tests":5,
+		"min_token_price":1, 
+		"max_token_price":100,
+
+		"num_chromosomes":100,
+		"num_chromosomes_kept":50,
+		"chance_of_stop_condon":0.1
+		
+
+
+	},
+	"ontology":{
+	
+		"test":{
+			"_weight":  0.3,
+			"clusterer":{
+
+				"Silhouette":{
+					"_weight":  0.3,
+					"_pickle":"test_clusterer_silhouette.p",
+					"_kwargs": {"time":{"type":"float32"}},
+					"_args":[{"type":"numpy.ndarray","dtype":"float32"},
+						{"type":"numpy.ndarray","dtype":"int32"}
+						],
+					"_return":[{"type":"float"}]
+			
+				}
+
+		
+			}
+		},
+	
+		"data":{
+			"_weight":  0.3,
+			"freetext": {
+				"internetResearchAgency":{
+					"_weight":  0.3,
+					"_pickle":"data_freetext_internetResearchAgency.p",
+					"_return":[{"type":"pandas.core.frame.DataFrame"}]
+
+				},
+				"BSdetector":{
+					"_weight":  0.3,
+					"_pickle":"data_freetext_BSdetector.p",
+					"_return":[{"type":"pandas.core.frame.DataFrame"}]
+
+				},
+				"short":{
+					"_weight":  0.3,
+					"_pickle":"data_freetext_short.p",
+					"_return":[{"type":"pandas.core.frame.DataFrame"}]
+
+				}
+			},
+			"vector": {
+				"_weight":  0.3,
+				"blobs":{
+					"_weight":  0.3,
+					"_pickle":"data_vector_blobs.p",
+					"_return":[{"type":"pandas.core.frame.DataFrame"}]
+
+				}
+			}
+
+		},
+		"preprocessor":{
+			"_weight":  0.3,
+			"freetext": {
+				"_weight":  0.3,
+				"emojiRemoval":{
+					"_weight":  0.3,
+					"_pickle":"data_freetext_internetResearchAgency.p",
+					"_return":[{"type":"pandas.core.frame.DataFrame"}]
+
+				},
+				"lemmatization":{
+					"_weight":  0.3,
+					"_pickle":"data_freetext_BSdetector.p",
+					"_return":[{"type":"pandas.core.frame.DataFrame"}]
+
+				},
+
+				"stopwords":{
+					"_weight":  0.3,
+					"_pickle":"data_vector_blobs.p",
+					"_return":[{"type":"pandas.core.frame.DataFrame"}]
+
+				}
+		
+
+			}
+		
+
+		},
+
+		"clusterer":{
+			"_weight":  0.3,
+			"sklearn": {
+
+				"_weight":  0.3,
+				"kmeans": {
+					"_weight":  0.3,
+					"_pickle":"clusterer_sklearn_kmeans.p",
+					"_kwargs": {"n_clusters":{"type":"int"}},
+					"_args":[{"type":"numpy.ndarray","dtype":"float32"}],
+					"_return":[{"type":"numpy.ndarray","dtype":"int32"}],
+
+					"5clusters":{
+						"_weight":  0.3,
+						"_pickle":"clusterer_sklearn_kmeans_5clusters.p",
+						"_kwarg_vals": {"n_clusters":5},
+						"_kwargs": {}
+
+					},
+
+
+					"10clusters":{
+						"_weight":  0.3,		
+						"_pickle":"clusterer_sklearn_kmeans_10clusters.p",
+						"_kwarg_vals": {"n_clusters":10},
+						"_kwargs": {}
+				
+					},
+
+					"20clusters":{
+						"_weight":  0.3,
+						"_pickle":"clusterer_sklearn_kmeans_20clusters.p",
+						"_kwarg_vals": {"n_clusters":20},
+						"_kwargs": {}
+
+					}
+
+
+
+				},
+
+
+				"agglomerative": {
+					"_weight":  0.3,
+					"_pickle":"clusterer_sklearn_agglomerative.p",
+					"_kwargs": {"n_clusters":{"type":"int"}},
+					"_args":[{"type":"numpy.ndarray","dtype":"float32"}],
+					"_return":[{"type":"numpy.ndarray","dtype":"int32"}],
+
+					"5clusters":{
+						"_weight":  0.3,
+						"_pickle":"clusterer_sklearn_agglomerative_5clusters.p",
+						"_kwarg_vals": {"n_clusters":5},
+						"_kwargs": {}
+
+					},
+
+
+					"10clusters":{
+						"_weight":  0.3,
+						"_pickle":"clusterer_sklearn_agglomerative_10clusters.p",
+						"_kwarg_vals": {"n_clusters":10},
+						"_kwargs": {}
+
+					},
+
+					"20clusters":{
+						"_weight":  0.3,
+						"_pickle":"clusterer_sklearn_agglomerative_20clusters.p",
+						"_kwarg_vals": {"n_clusters":20},
+						"_kwargs": {}
+
+					}
+
+
+
+				},
+
+				"affinityPropagation": {
+					"_weight":  0.3,
+					"_pickle":"clusterer_sklearn_affinityPropagation.p",
+					"_kwargs": {"n_clusters":{"type":"int"}},
+					"_args":[{"type":"numpy.ndarray","dtype":"float32"}],
+					"_return":[{"type":"numpy.ndarray","dtype":"int32"}],
+
+					"5clusters":{
+						"_weight":  0.3,
+						"_pickle":"clusterer_sklearn_affinityPropagation_5clusters.p",
+						"_kwarg_vals": {"n_clusters":5},
+						"_kwargs": {}
+
+					},
+
+
+					"10clusters":{
+						"_weight":  0.3,
+						"_pickle":"clusterer_sklearn_affinityPropagation_10clusters.p",
+						"_kwarg_vals": {"n_clusters":10},
+						"_kwargs": {}
+
+					},
+
+					"20clusters":{
+						"_weight":  0.3,
+						"_pickle":"clusterer_sklearn_affinityPropagation_20clusters.p",
+						"_kwarg_vals": {"n_clusters":20},
+						"_kwargs": {}
+
+					}
+
+
+
+				},
+
+				"meanShift": {
+					"_weight":  0.3,
+					"_pickle":"clusterer_sklearn_meanShift.p",
+					"_kwargs": {"n_clusters":{"type":"int"}},
+					"_args":[{"type":"numpy.ndarray","dtype":"float32"}],
+					"_return":[{"type":"numpy.ndarray","dtype":"int32"}],
+
+					"5clusters":{
+						"_weight":  0.3,
+						"_pickle":"clusterer_sklearn_meanShift_5clusters.p",
+						"_kwarg_vals": {"n_clusters":5},
+						"_kwargs": {}
+
+					},
+
+
+					"10clusters":{
+						"_weight":  0.3,
+						"_pickle":"clusterer_sklearn_meanShift_10clusters.p",
+						"_kwarg_vals": {"n_clusters":10},
+						"_kwargs": {}
+
+					},
+
+					"20clusters":{
+						"_weight":  0.3,
+						"_pickle":"clusterer_sklearn_meanShift_20clusters.p",
+						"_kwarg_vals": {"n_clusters":20},
+						"_kwargs": {}
+
+					}
+
+
+
+				},
+
+				"spectral": {
+					"_weight":  0.3,
+					"_pickle":"clusterer_sklearn_spectral.p",
+					"_kwargs": {"n_clusters":{"type":"int"}},
+					"_args":[{"type":"numpy.ndarray","dtype":"float32"}],
+					"_return":[{"type":"numpy.ndarray","dtype":"int32"}],
+
+					"5clusters":{
+						"_weight":  0.3,
+						"_pickle":"clusterer_sklearn_spectral_5clusters.p",
+						"_kwarg_vals": {"n_clusters":5},
+						"_kwargs": {}
+
+					},
+
+
+					"10clusters":{
+						"_weight":  0.3,
+						"_pickle":"clusterer_sklearn_spectral_10clusters.p",
+						"_kwarg_vals": {"n_clusters":10},
+						"_kwargs": {}
+
+					},
+
+					"20clusters":{
+						"_weight":  0.3,
+						"_pickle":"clusterer_sklearn_spectral_20clusters.p",
+						"_kwarg_vals": {"n_clusters":20},
+						"_kwargs": {}
+
+					}
+
+
+
+				},
+
+				"ward": {
+					"_weight":  0.3,
+
+					"_pickle":"clusterer_sklearn_ward.p",
+					"_kwargs": {"n_clusters":{"type":"int"}},
+					"_args":[{"type":"numpy.ndarray","dtype":"float32"}],
+					"_return":[{"type":"numpy.ndarray","dtype":"int32"}],
+
+					"5clusters":{
+						"_weight":  0.3,
+						"_pickle":"clusterer_sklearn_ward_5clusters.p",
+						"_kwarg_vals": {"n_clusters":5},
+						"_kwargs": {}
+
+					},
+
+
+					"10clusters":{
+						"_weight":  0.3,
+						"_pickle":"clusterer_sklearn_ward_10clusters.p",
+						"_kwarg_vals": {"n_clusters":10},
+						"_kwargs": {}
+
+					},
+
+					"20clusters":{
+						"_weight":  0.3,
+						"_pickle":"clusterer_sklearn_ward_20clusters.p",
+						"_kwarg_vals": {"n_clusters":20},
+						"_kwargs": {}
+
+					}
+
+
+
+				},
+
+				"dbscan": {
+					"_weight":  0.3,
+					"_pickle":"clusterer_sklearn_dbscan.p",
+					"_kwargs": {"n_clusters":{"type":"int"}},
+					"_args":[{"type":"numpy.ndarray","dtype":"float32"}],
+					"_return":[{"type":"numpy.ndarray","dtype":"int32"}],
+
+					"5clusters":{
+						"_weight":  0.3,
+						"_pickle":"clusterer_sklearn_dbscan_5clusters.p",
+						"_kwarg_vals": {"n_clusters":5},
+						"_kwargs": {}
+
+					},
+
+
+					"10clusters":{
+						"_weight":  0.3,
+						"_pickle":"clusterer_sklearn_dbscan_10clusters.p",
+						"_kwarg_vals": {"n_clusters":10},
+						"_kwargs": {}
+
+					},
+
+					"20clusters":{
+						"_weight":  0.3,
+						"_pickle":"clusterer_sklearn_dbscan_20clusters.p",
+						"_kwarg_vals": {"n_clusters":20},
+						"_kwargs": {}
+
+					}
+
+
+
+				},
+				"birch": {
+					"_weight":  0.3,
+					"_pickle":"clusterer_sklearn_birch.p",
+					"_kwargs": {"n_clusters":{"type":"int"}},
+					"_args":[{"type":"numpy.ndarray","dtype":"float32"}],
+					"_return":[{"type":"numpy.ndarray","dtype":"int32"}],
+
+					"5clusters":{
+						"_weight":  0.3,
+						"_pickle":"clusterer_sklearn_birch_5clusters.p",
+						"_kwarg_vals": {"n_clusters":5},
+						"_kwargs": {}
+
+					},
+
+
+					"10clusters":{
+						"_weight":  0.3,
+						"_pickle":"clusterer_sklearn_birch_10clusters.p",
+						"_kwarg_vals": {"n_clusters":10},
+						"_kwargs": {}
+
+					},
+
+					"20clusters":{
+						"_weight":  0.3,
+						"_pickle":"clusterer_sklearn_birch_20clusters.p",
+						"_kwarg_vals": {"n_clusters":20},
+						"_kwargs": {}
+
+					}
+
+
+
+				},
+
+				"gaussian": {
+					"_weight":  0.3,
+					"_pickle":"clusterer_sklearn_gaussian.p",
+					"_kwargs": {"n_clusters":{"type":"int"}},
+					"_args":[{"type":"numpy.ndarray","dtype":"float32"}],
+					"_return":[{"type":"numpy.ndarray","dtype":"int32"}],
+
+					"5clusters":{
+						"_weight":  0.3,
+						"_pickle":"clusterer_sklearn_gaussian_5clusters.p",
+						"_kwarg_vals": {"n_clusters":5},
+						"_kwargs": {}
+
+					},
+
+
+					"10clusters":{
+						"_weight":  0.3,
+						"_pickle":"clusterer_sklearn_gaussian_10clusters.p",
+						"_kwarg_vals": {"n_clusters":10},
+						"_kwargs": {}
+
+					},
+
+					"20clusters":{
+						"_weight":  0.3,
+						"_pickle":"clusterer_sklearn_gaussian_20clusters.p",
+						"_kwarg_vals": {"n_clusters":20},
+						"_kwargs": {}
+
+					}
+
+
+
+				}
+			},
+			"nltk":{
+
+				"kmeans": {
+					"_weight":  0.3,
+					"_pickle":"clusterer_nltk_kmeans.p",
+					"_kwargs": {"n_clusters":{"type":"int"}},
+					"_args":[{"type":"numpy.ndarray","dtype":"float32"}],
+					"_return":[{"type":"numpy.ndarray","dtype":"int32"}],
+
+					"5clusters":{
+						"_weight":  0.3,
+						"_pickle":"clusterer_nltk_kmeans_5clusters.p",
+						"_kwarg_vals": {"n_clusters":5},
+						"_kwargs": {}
+
+					},
+
+
+					"10clusters":{
+						"_weight":  0.3,
+						"_pickle":"clusterer_nltk_kmeans_10clusters.p",
+						"_kwarg_vals": {"n_clusters":10},
+						"_kwargs": {}
+
+					},
+
+					"20clusters":{
+						"_weight":  0.3,
+						"_pickle":"clusterer_nltk_kmeans_20clusters.p",
+						"_kwarg_vals": {"n_clusters":20},
+						"_kwargs": {}
+
+					}
+
+
+
+				},
+
+				"agglomerative": {
+					"_weight":  0.3,
+					"_pickle":"clusterer_nltk_agglomerative.p",
+					"_kwargs": {"n_clusters":{"type":"int"}},
+					"_args":[{"type":"numpy.ndarray","dtype":"float32"}],
+					"_return":[{"type":"numpy.ndarray","dtype":"int32"}],
+
+					"5clusters":{
+						"_weight":  0.3,
+						"_pickle":"clusterer_nltk_agglomerative_5clusters.p",
+						"_kwarg_vals": {"n_clusters":5},
+						"_kwargs": {}
+
+					},
+
+
+					"10clusters":{
+						"_weight":  0.3,
+						"_pickle":"clusterer_nltk_agglomerative_10clusters.p",
+						"_kwarg_vals": {"n_clusters":10},
+						"_kwargs": {}
+
+					},
+
+					"20clusters":{
+						"_weight":  0.3,
+						"_pickle":"clusterer_nltk_agglomerative_20clusters.p",
+						"_kwarg_vals": {"n_clusters":20},
+						"_kwargs": {}
+
+					}
+
+
+
+				}
+
+			}	
+
+		},
+
+		"vectorSpace":{
+			"gensim":{
+				"doc2vec":{
+					"_weight":  0.3,
+					"_pickle":"vectorSpace_gensim_doc2vec.p",
+					"_kwargs": {"size":{"type":"int"},"iterations":{"type":"int"},"minfreq":{"type":"int"}},
+					"_args":[{"type":"pandas.core.frame.DataFrame"}],
+					"_return":[{"type":"numpy.ndarray","dtype":"float32"}],
+	
+
+					"50size":{
+						"_weight":  0.3,
+						"_pickle":"vectorSpace_gensim_doc2vec_50size.p",
+						"_kwarg_vals": {"size":50},
+						"_kwargs": {"iterations":{"type":"int"},"minfreq":{"type":"int"}},
+					
+						"20iterations":{
+							"_weight":  0.3,
+							"_pickle":"vectorSpace_gensim_doc2vec_50size_20iterations.p",
+							"_kwarg_vals": {"iterations":20},
+							"_kwargs": {"minfreq":{"type":"int"}},
+
+							"2minFreq":{
+								"_weight":  0.3,
+								"_pickle":"vectorSpace_gensim_doc2vec_50size_20iterations_2minFreq.p",
+								"_kwarg_vals": {"minFreq":2},
+								"_kwargs": {}
+							},
+
+							"5minFreq":{
+								"_weight":  0.3,
+								"_pickle":"vectorSpace_gensim_doc2vec_50size_20iterations_5minFreq.p",
+								"_kwarg_vals": {"minFreq":5},
+								"_kwargs": {}
+							}
+						},
+
+						"200iterations":{
+							"_weight":  0.3,
+							"_pickle":"vectorSpace_gensim_doc2vec_50size_200iterations.p",
+							"_kwarg_vals": {"iterations":200},
+							"_kwargs": {"minfreq":{"type":"int"}},
+
+							"2minFreq":{
+								"_weight":  0.3,
+								"_pickle":"vectorSpace_gensim_doc2vec_50size_200iterations_2minFreq.p",
+								"_kwarg_vals": {"minFreq":2},
+								"_kwargs": {}
+							},
+
+							"5minFreq":{
+								"_weight":  0.3,
+								"_pickle":"vectorSpace_gensim_doc2vec_50size_200iterations_5minFreq.p",
+								"_kwarg_vals": {"minFreq":5},
+								"_kwargs": {}
+							}
+						},
+
+						"1000iterations":{
+							"_weight":  0.3,
+							"_pickle":"vectorSpace_gensim_doc2vec_50size_1000iterations.p",
+							"_kwarg_vals": {"iterations":1000},
+							"_kwargs": {"minfreq":{"type":"int"}},
+
+							"2minFreq":{
+								"_weight":  0.3,
+								"_pickle":"vectorSpace_gensim_doc2vec_50size_1000iterations_2minFreq.p",
+								"_kwarg_vals": {"minFreq":2},
+								"_kwargs": {}
+							},
+
+							"5minFreq":{
+								"_weight":  0.3,
+								"_pickle":"vectorSpace_gensim_doc2vec_50size_1000iterations_5minFreq.p",
+								"_kwarg_vals": {"minFreq":5},
+								"_kwargs": {}
+							}
+						}
+
+
+					},
+
+					"100size":{
+						"_weight":  0.3,
+						"_pickle":"vectorSpace_gensim_doc2vec_100size.p",
+						"_kwarg_vals": {"size":100},
+						"_kwargs": {"iterations":{"type":"int"},"minfreq":{"type":"int"}},
+
+						"20iterations":{
+							"_weight":  0.3,
+							"_pickle":"vectorSpace_gensim_doc2vec_100size_20iterations.p",
+							"_kwarg_vals": {"iterations":20},
+							"_kwargs": {"minfreq":{"type":"int"}},
+
+							"2minFreq":{
+								"_weight":  0.3,
+								"_pickle":"vectorSpace_gensim_doc2vec_100size_20iterations_2minFreq.p",
+								"_kwarg_vals": {"minFreq":2},
+								"_kwargs": {}
+							},
+
+							"5minFreq":{
+								"_weight":  0.3,
+								"_pickle":"vectorSpace_gensim_doc2vec_100size_20iterations_5minFreq.p",
+								"_kwarg_vals": {"minFreq":5},
+								"_kwargs": {}
+							}
+						},
+
+						"200iterations":{
+							"_weight":  0.3,
+							"_pickle":"vectorSpace_gensim_doc2vec_100size_200iterations.p",
+							"_kwarg_vals": {"iterations":200},
+							"_kwargs": {"minfreq":{"type":"int"}},
+
+							"2minFreq":{
+								"_weight":  0.3,
+								"_pickle":"vectorSpace_gensim_doc2vec_100size_200iterations_2minFreq.p",
+								"_kwarg_vals": {"minFreq":2},
+								"_kwargs": {}
+							},
+
+							"5minFreq":{
+								"_weight":  0.3,
+								"_pickle":"vectorSpace_gensim_doc2vec_100size_200iterations_5minFreq.p",
+								"_kwarg_vals": {"minFreq":5},
+								"_kwargs": {}
+							}
+						},
+
+						"1000iterations":{
+							"_weight":  0.3,
+							"_pickle":"vectorSpace_gensim_doc2vec_100size_1000iterations.p",
+							"_kwarg_vals": {"iterations":1000},
+							"_kwargs": {"minfreq":{"type":"int"}},
+
+							"2minFreq":{
+								"_weight":  0.3,
+								"_pickle":"vectorSpace_gensim_doc2vec_100size_1000iterations_2minFreq.p",
+								"_kwarg_vals": {"minFreq":2},
+								"_kwargs": {}
+							},
+
+							"5minFreq":{
+								"_weight":  0.3,
+								"_pickle":"vectorSpace_gensim_doc2vec_100size_1000iterations_5minFreq.p",
+								"_kwarg_vals": {"minFreq":5},
+								"_kwargs": {}
+							}
+						}
+
+					},
+				
+
+
+					"200size":{
+						"_weight":  0.3,
+						"_pickle":"vectorSpace_gensim_doc2vec_200size.p",
+						"_kwarg_vals": {"size":200},
+						"_kwargs": {"iterations":{"type":"int"},"minfreq":{"type":"int"}},
+
+						"20iterations":{
+							"_weight":  0.3,
+							"_pickle":"vectorSpace_gensim_doc2vec_200size_20iterations.p",
+							"_kwarg_vals": {"iterations":20},
+							"_kwargs": {"minfreq":{"type":"int"}},
+
+							"2minFreq":{
+								"_weight":  0.3,
+								"_pickle":"vectorSpace_gensim_doc2vec_200size_20iterations_2minFreq.p",
+								"_kwarg_vals": {"minFreq":2},
+								"_kwargs": {}
+							},
+
+							"5minFreq":{
+								"_weight":  0.3,
+								"_pickle":"vectorSpace_gensim_doc2vec_200size_20iterations_5minFreq.p",
+								"_kwarg_vals": {"minFreq":5},
+								"_kwargs": {}
+							}
+						},
+
+						"200iterations":{
+							"_weight":  0.3,
+							"_pickle":"vectorSpace_gensim_doc2vec_200size_200iterations.p",
+							"_kwarg_vals": {"iterations":200},
+							"_kwargs": {"minfreq":{"type":"int"}},
+
+							"2minFreq":{
+								"_weight":  0.3,
+								"_pickle":"vectorSpace_gensim_doc2vec_200size_200iterations_2minFreq.p",
+								"_kwarg_vals": {"minFreq":2},
+								"_kwargs": {}
+							},
+
+							"5minFreq":{
+								"_weight":  0.3,
+								"_pickle":"vectorSpace_gensim_doc2vec_200size_200iterations_5minFreq.p",
+								"_kwarg_vals": {"minFreq":5},
+								"_kwargs": {}
+							}
+						},
+
+						"1000iterations":{
+							"_weight":  0.3,
+							"_pickle":"vectorSpace_gensim_doc2vec_200size_1000iterations.p",
+							"_kwarg_vals": {"iterations":1000},
+							"_kwargs": {"minfreq":{"type":"int"}},
+
+							"2minFreq":{
+								"_weight":  0.3,
+								"_pickle":"vectorSpace_gensim_doc2vec_200size_1000iterations_2minFreq.p",
+								"_kwarg_vals": {"minFreq":2},
+								"_kwargs": {}
+							},
+
+							"5minFreq":{
+								"_weight":  0.3,
+								"_pickle":"vectorSpace_gensim_doc2vec_200size_1000iterations_5minFreq.p",
+								"_kwarg_vals": {"minFreq":5},
+								"_kwargs": {}
+							}
+						}
+
+					},
+
+
+					"300size":{
+						"_weight":  0.3,
+						"_pickle":"vectorSpace_gensim_doc2vec_300size.p",
+						"_kwarg_vals": {"size":300},
+						"_kwargs": {"iterations":{"type":"int"},"minfreq":{"type":"int"}},
+
+						"20iterations":{
+							"_weight":  0.3,
+							"_pickle":"vectorSpace_gensim_doc2vec_300size_20iterations.p",
+							"_kwarg_vals": {"iterations":20},
+							"_kwargs": {"minfreq":{"type":"int"}},
+
+							"2minFreq":{
+								"_weight":  0.3,
+								"_pickle":"vectorSpace_gensim_doc2vec_300size_20iterations_2minFreq.p",
+								"_kwarg_vals": {"minFreq":2},
+								"_kwargs": {}
+							},
+
+							"5minFreq":{
+								"_weight":  0.3,
+								"_pickle":"vectorSpace_gensim_doc2vec_300size_20iterations_5minFreq.p",
+								"_kwarg_vals": {"minFreq":5},
+								"_kwargs": {}
+							}
+						},
+
+						"200iterations":{
+							"_weight":  0.3,
+							"_pickle":"vectorSpace_gensim_doc2vec_300size_200iterations.p",
+							"_kwarg_vals": {"iterations":200},
+							"_kwargs": {"minfreq":{"type":"int"}},
+
+							"2minFreq":{
+								"_weight":  0.3,
+								"_pickle":"vectorSpace_gensim_doc2vec_300size_200iterations_2minFreq.p",
+								"_kwarg_vals": {"minFreq":2},
+								"_kwargs": {}
+							},
+
+							"5minFreq":{
+								"_weight":  0.3,
+								"_pickle":"vectorSpace_gensim_doc2vec_300size_200iterations_5minFreq.p",
+								"_kwarg_vals": {"minFreq":5},
+								"_kwargs": {}
+							}
+						},
+
+						"1000iterations":{
+							"_weight":  0.3,
+							"_pickle":"vectorSpace_gensim_doc2vec_300size_1000iterations.p",
+							"_kwarg_vals": {"iterations":1000},
+							"_kwargs": {"minfreq":{"type":"int"}},
+
+							"2minFreq":{
+								"_weight":  0.3,
+								"_pickle":"vectorSpace_gensim_doc2vec_300size_1000iterations_2minFreq.p",
+								"_kwarg_vals": {"minFreq":2},
+								"_kwargs": {}
+							},
+
+							"5minFreq":{
+								"_weight":  0.3,
+								"_pickle":"vectorSpace_gensim_doc2vec_300size_1000iterations_5minFreq.p",
+								"_kwarg_vals": {"minFreq":5},
+								"_kwargs": {}
+							}
+						}
+					}
+
+
+				
+
+
+				}
+			}
+
+		}
+
+	}
+
+
+}
+
+	
+
+
