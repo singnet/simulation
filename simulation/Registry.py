@@ -53,10 +53,16 @@ def test_clusterer_silhouette(XY):
 
     import sklearn
     from sklearn import metrics
+
+    min_score = -1.0
+    max_score = 1.0
+    #normalize from zero to one, from the min and max that this test gives.
+
     X = XY[0]
     Y = XY[1]
     print('test_clusterer_silhouette')
     silhouette = metrics.silhouette_score(X, Y, metric='cosine')
+    silhouette = (silhouette-min_score)/(max_score - min_score)
     return (silhouette)
 
 
@@ -73,7 +79,12 @@ def test_clusterer_calinskiHarabaz(XY):
     import sklearn
     from sklearn import metrics
 
+    min_score = 0
+    max_score = 500
+
     calinski_harabaz = metrics.calinski_harabaz_score(X, Y)
+
+    calinski_harabaz = (calinski_harabaz - min_score) / (max_score - min_score)
     return (calinski_harabaz)
 
 
@@ -172,29 +183,76 @@ def preprocessor_freetext_shuffle(X):
     #   "_args": [{"type": "list" }],
     #   "_return": [{"type": "list" }]
     import random
+
     print("preprocessor_freetext_shuffle")
     random.shuffle(X)
     return (X)
 
 # data
 
-def data_freetext_csvColumn(path, col='text'):
+def data_freetext_csvColumn(relative_path, col='text'):
     #  returns a list of documents that are strings
     #   "_return": [{"type": "list","firstElement":"string" }]
 
     import pandas as pd
+    import os
 
-    print('data_freetext_csvColumn_short')
+    # script.py
+    #current_file = os.path.abspath(os.path.dirname(__file__))   # older/folder2/scripts_folder
+
+    # csv_filename
+    #csv_filename = os.path.join(current_file, relative_path)
+
+    cwd = os.getcwd()
+    path = cwd+relative_path
+
+    print('data_freetext_csvColumn at ' +path)
     raw_data = pd.read_csv(path, encoding="ISO-8859-1")
     docList = [raw_data.loc[i, col] for i in range(len(raw_data)) if raw_data.loc[i, col]]
     return docList
 
 
-#def data_vector_blobs(n_samples=1500):
-    #import sklearn
-    # from sklearn.datasets import make_blobs
-    # X, Y = make_blobs(n_samples=n_samples, random_state=8)
-    # return X
+def data_vector_varied(n_samples=1500):
+    import sklearn
+    from sklearn.datasets import make_blobs
+    X, Y = make_blobs(n_samples=n_samples,
+                               cluster_std=[1.0, 2.5, 0.5],
+                               random_state=170)
+    return X
+
+
+def data_vector_ansio(n_samples=1500):
+    import sklearn
+    import numpy as np
+    from sklearn.datasets import make_blobs
+    X, y = make_blobs(n_samples=n_samples, random_state=170)
+    transformation = [[0.6, -0.6], [-0.4, 0.8]]
+    X_aniso = np.dot(X, transformation)
+
+    return X_aniso
+
+
+def data_vector_circles(n_samples=1500):
+    import sklearn
+    from sklearn.datasets import make_circles
+    X, Y = make_circles(n_samples=n_samples, factor=.5,
+                        noise=.05)
+    return X
+
+
+def data_vector_moons(n_samples=1500):
+    import sklearn
+    from sklearn.datasets import make_moons
+    X, Y = make_moons(n_samples=n_samples, noise=.05)
+    return X
+
+
+def data_vector_blobs(n_samples=1500):
+    import sklearn
+    from sklearn.datasets import make_blobs
+    X, Y = make_blobs(n_samples=n_samples, random_state=8)
+    return X
+
 
 # Clusterers
 
@@ -377,128 +435,150 @@ def clusterer_sklearn_gaussian(X, n_clusters):
     return (XY)
 
 
-def clusterer_nltk_kmeans(XY, n_clusters):
+def clusterer_nltk_kmeans(X, n_clusters):
     # "_args": [{"type": "numpy.ndarray","dtype": "float32"} ],
     #   "_return": [{ "type": "numpy.ndarray","dtype": "int32"}
 
     # in this case we want to try different numbers of clusters, so it is a parameter
 
     import nltk
+    import numpy as np
     from nltk.cluster.kmeans import KMeansClusterer
 
-    X = XY[0]
-    cmtVectors = XY[1]
-    clusterAlgNK = KMeansClusterer(params['n_clusters'], distance=nltk.cluster.util.cosine_distance, repeats=25,
-                                   avoid_empty_clusters=True)
-    clusterAlgLabelAssignmentsNK = clusterAlgNK.cluster(cmtVectors, assign_clusters=True)
+    clusterAlgLabelAssignmentsNK=None
+    #X = XY[0]
+    cmtVectors = X  #XY[1]
+    if type(cmtVectors) is np.ndarray and len(cmtVectors) > 0:
+        #dt = np.dtype(cmtVectors)
+        dt = cmtVectors.dtype
+        if (dt.type is np.float32 or dt.type is np.float64 ):
+            clusterAlgNK = KMeansClusterer(params['n_clusters'], distance=nltk.cluster.util.cosine_distance, repeats=25,
+                                           avoid_empty_clusters=True)
+            clusterAlgLabelAssignmentsNK = clusterAlgNK.cluster(cmtVectors, assign_clusters=True)
 
     XY = (X, clusterAlgLabelAssignmentsNK)
     return (XY)
 
 
-def clusterer_nltk_agglomerative(XY, n_clusters):
+def clusterer_nltk_agglomerative(X, n_clusters):
     # "_args": [{"type": "numpy.ndarray","dtype": "float32"} ],
     #   "_return": [{ "type": "numpy.ndarray","dtype": "int32"}
 
     # in this case we want to try different numbers of clusters, so it is a parameter
 
     import nltk
+    import numpy as np
     from nltk.cluster.gaac import GAAClusterer
+    clusterAlgLabelAssignmentsNG=None
 
-    X = XY[0]
-    cmtVectors = XY[1]
-    clusterAlgNG = GAAClusterer(num_clusters=params['n_clusters'], normalise=True, svd_dimensions=None)
-    clusterAlgLabelAssignmentsNG = clusterAlgNG.cluster(cmtVectors, assign_clusters=True)
+    #X = XY[0]
+    cmtVectors = X #XY[1]
+
+    if type(cmtVectors) is np.ndarray and len(cmtVectors) > 0:
+        # dt = np.dtype(cmtVectors)
+        dt = cmtVectors.dtype
+        if (dt.type is np.float32 or dt.type is np.float64 ):
+            clusterAlgNG = GAAClusterer(num_clusters=params['n_clusters'], normalise=True, svd_dimensions=None)
+            clusterAlgLabelAssignmentsNG = clusterAlgNG.cluster(cmtVectors, assign_clusters=True)
 
     XY = (X, clusterAlgLabelAssignmentsNG)
     return (XY)
 
 
 #Fill the initial function
-registry= {}
+#Since in this case we dont want other programs to fill in the parameters, we dont put original functions in the registry
+curries= {}
 
-registry['data_freetext_csvColumn']= curr(data_freetext_csvColumn)
-#registry['data_vector_blobs']= curr(data_vector_blobs)
+curries['data_freetext_csvColumn']= curr(data_freetext_csvColumn)
+#curries['data_vector_blobs']= curr(data_vector_blobs)
+curries['vectorSpace_gensim_doc2vec'] = curr(vectorSpace_gensim_doc2vec)
+curries['clusterer_sklearn_kmeans'] = curr (clusterer_sklearn_kmeans)
+curries['clusterer_sklearn_agglomerative'] = curr (clusterer_sklearn_agglomerative)
+curries['clusterer_sklearn_affinityPropagation'] = curr (clusterer_sklearn_affinityPropagation)
+curries['clusterer_sklearn_meanShift'] = curr (clusterer_sklearn_meanShift)
+curries['clusterer_sklearn_spectral'] = curr (clusterer_sklearn_spectral)
+curries['clusterer_sklearn_ward'] = curr (clusterer_sklearn_ward)
+curries['clusterer_sklearn_dbscan'] = curr (clusterer_sklearn_dbscan)
+curries['clusterer_sklearn_birch'] = curr (clusterer_sklearn_birch)
+curries['clusterer_sklearn_gaussian'] = curr (clusterer_sklearn_gaussian)
+curries['clusterer_nltk_agglomerative'] = curr (clusterer_nltk_agglomerative)
+curries['clusterer_nltk_kmeans'] = curr (clusterer_nltk_kmeans)
+
+#Create the constructions that would be machine learned, using a shortened dataset
+registry ={}
+registry['data_vector_blobs']= curr(data_vector_blobs)
+registry['data_vector_moons']= curr(data_vector_moons)
+registry['data_vector_circles']= curr(data_vector_circles)
+registry['data_vector_ansio']= curr(data_vector_ansio)
+registry['data_vector_varied']= curr(data_vector_varied)
+registry['test_clusterer_silhouette']  = curr(test_clusterer_silhouette)
+registry['test_clusterer_calinskiHarabaz']  = curr(test_clusterer_calinskiHarabaz)
 registry['preprocessor_freetext_shuffle'] = curr(preprocessor_freetext_shuffle)
 registry['preprocessor_freetext_strip'] = curr(preprocessor_freetext_strip)
 registry['preprocessor_freetext_lemmatization']  = curr(preprocessor_freetext_lemmatization)
 registry['preprocessor_freetext_tag']= curr(preprocessor_freetext_tag)
-registry['vectorSpace_gensim_doc2vec'] = curr(vectorSpace_gensim_doc2vec)
-registry['clusterer_sklearn_kmeans'] = curr (clusterer_sklearn_kmeans)
-registry['clusterer_sklearn_agglomerative'] = curr (clusterer_sklearn_agglomerative)
-registry['clusterer_sklearn_affinityPropagation'] = curr (clusterer_sklearn_affinityPropagation)
-registry['clusterer_sklearn_meanShift'] = curr (clusterer_sklearn_meanShift)
-registry['clusterer_sklearn_spectral'] = curr (clusterer_sklearn_spectral)
-registry['clusterer_sklearn_ward'] = curr (clusterer_sklearn_ward)
-registry['clusterer_sklearn_dbscan'] = curr (clusterer_sklearn_dbscan)
-registry['clusterer_sklearn_birch'] = curr (clusterer_sklearn_birch)
-registry['clusterer_sklearn_gaussian'] = curr (clusterer_sklearn_gaussian)
-registry['clusterer_nltk_agglomerative'] = curr (clusterer_nltk_agglomerative)
-registry['clusterer_nltk_kmeans'] = curr (clusterer_nltk_kmeans)
-registry['test_clusterer_silhouette']  = curr(test_clusterer_silhouette)
-registry['test_clusterer_calinskiHarabaz']  = curr(test_clusterer_calinskiHarabaz)
+registry['data_freetext_politicalTweets']= curries['data_freetext_csvColumn']('/data/pol_tweets.csv')
+registry['data_freetext_internetResearchAgencyFacebook']= curries['data_freetext_csvColumn']('/data/facebook.csv') #stay short for notebook
+registry['data_freetext_trumpTweets']= curries['data_freetext_csvColumn']('/data/trump_tweets.csv')
+registry['data_freetext_politicalAds']= curries['data_freetext_csvColumn']('/data/political_ads.csv')
+registry['data_freetext_BSdetector']= curries['data_freetext_csvColumn']('/data/fake.csv')
+registry['data_freetext_internetResearchAgencyTweets']= curries['data_freetext_csvColumn']('/data/tweets.csv') #stay short for notebook
+registry['data_freetext_short']= curries['data_freetext_csvColumn']('/data/short.csv')
 
-#Create the constructions that would be machine learned, using a shortened dataset
-
-
-registry['data_freetext_BSdetector']= registry['data_freetext_csvColumn'](path = 'short.csv') #stay short for notebook
-registry['data_freetext_internetResearchAgency']= registry['data_freetext_csvColumn'](path = 'short.csv') #stay short for notebook
-registry['data_freetext_short']= registry['data_freetext_csvColumn'](path = 'short.csv')
-
-registry['clusterer_sklearn_kmeans_5clusters']=registry['clusterer_sklearn_kmeans'](n_clusters = 5)
-registry['clusterer_sklearn_kmeans_10clusters']=registry['clusterer_sklearn_kmeans'](n_clusters = 10)
-registry['clusterer_sklearn_kmeans_20clusters']=registry['clusterer_sklearn_kmeans'](n_clusters = 20)
-registry['clusterer_sklearn_agglomerative_5clusters']=registry['clusterer_sklearn_agglomerative'](n_clusters = 5)
-registry['clusterer_sklearn_agglomerative_10clusters']=registry['clusterer_sklearn_agglomerative'](n_clusters = 10)
-registry['clusterer_sklearn_agglomerative_20clusters']=registry['clusterer_sklearn_agglomerative'](n_clusters = 20)
-registry['clusterer_sklearn_affinityPropagation_5clusters']=registry['clusterer_sklearn_affinityPropagation'](n_clusters = 5)
-registry['clusterer_sklearn_affinityPropagation_10clusters']=registry['clusterer_sklearn_affinityPropagation'](n_clusters = 10)
-registry['clusterer_sklearn_affinityPropagation_20clusters']=registry['clusterer_sklearn_affinityPropagation'](n_clusters = 20)
-registry['clusterer_sklearn_meanShift_5clusters']=registry['clusterer_sklearn_meanShift'](n_clusters = 5)
-registry['clusterer_sklearn_meanShift_10clusters']= registry['clusterer_sklearn_meanShift'](n_clusters = 10)
-registry['clusterer_sklearn_meanShift_20clusters']= registry['clusterer_sklearn_meanShift'](n_clusters = 20)
-registry['clusterer_sklearn_spectral_5clusters']= registry['clusterer_sklearn_spectral'](n_clusters = 5)
-registry['clusterer_sklearn_spectral_10clusters']= registry['clusterer_sklearn_spectral'](n_clusters = 10)
-registry['clusterer_sklearn_spectral_20clusters']= registry['clusterer_sklearn_spectral'](n_clusters = 20)
-registry['clusterer_sklearn_ward_5clusters']= registry['clusterer_sklearn_ward'](n_clusters = 5)
-registry['clusterer_sklearn_ward_10clusters']= registry['clusterer_sklearn_ward'](n_clusters = 10)
-registry['clusterer_sklearn_ward_20clusters']= registry['clusterer_sklearn_ward'](n_clusters = 20)
-registry['clusterer_sklearn_dbscan_5clusters']=registry['clusterer_sklearn_dbscan'](n_clusters = 5)
-registry['clusterer_sklearn_dbscan_10clusters']=registry['clusterer_sklearn_dbscan'](n_clusters = 10)
-registry['clusterer_sklearn_dbscan_20clusters']=registry['clusterer_sklearn_dbscan'](n_clusters = 20)
-registry['clusterer_sklearn_birch_5clusters']=registry['clusterer_sklearn_birch'](n_clusters = 5)
-registry['clusterer_sklearn_birch_10clusters']=registry['clusterer_sklearn_birch'](n_clusters = 10)
-registry['clusterer_sklearn_birch_20clusters']=registry['clusterer_sklearn_birch'](n_clusters = 20)
-registry['clusterer_sklearn_gaussian_5clusters']=registry['clusterer_sklearn_gaussian'](n_clusters = 5)
-registry['clusterer_sklearn_gaussian_10clusters']=registry['clusterer_sklearn_gaussian'](n_clusters = 10)
-registry['clusterer_sklearn_gaussian_20clusters']=registry['clusterer_sklearn_gaussian'](n_clusters = 20)
-registry['clusterer_nltk_kmeans_5clusters']=registry['clusterer_nltk_kmeans'](n_clusters = 5)
-registry['clusterer_nltk_kmeans_10clusters']=registry['clusterer_nltk_kmeans'](n_clusters = 10)
-registry['clusterer_nltk_kmeans_20clusters']=registry['clusterer_nltk_kmeans'](n_clusters = 20)
-registry['clusterer_nltk_agglomerative_5clusters']=registry['clusterer_nltk_agglomerative'](n_clusters = 5)
-registry['clusterer_nltk_agglomerative_10clusters']=registry['clusterer_nltk_agglomerative'](n_clusters = 10)
-registry['clusterer_nltk_agglomerative_20clusters']=registry['clusterer_nltk_agglomerative'](n_clusters = 20)
-registry['vectorSpace_gensim_doc2vec_50size_20iterations_2minFreq']=registry['vectorSpace_gensim_doc2vec'](size=50)(iterations = 20)(minfreq = 2)
-registry['vectorSpace_gensim_doc2vec_50size_20iterations_5minFreq']=registry['vectorSpace_gensim_doc2vec'](size=50)(iterations = 20)(minfreq = 5)
-registry['vectorSpace_gensim_doc2vec_50size_200iterations_2minFreq']=registry['vectorSpace_gensim_doc2vec'](size=50)(iterations = 200)(minfreq = 2)
-registry['vectorSpace_gensim_doc2vec_50size_200iterations_5minFreq']=registry['vectorSpace_gensim_doc2vec'](size=50)(iterations = 200)(minfreq = 5)
-registry['vectorSpace_gensim_doc2vec_50size_1000iterations_2minFreq']=registry['vectorSpace_gensim_doc2vec'](size=50)(iterations = 1000)(minfreq = 2)
-registry['vectorSpace_gensim_doc2vec_50size_1000iterations_5minFreq']=registry['vectorSpace_gensim_doc2vec'](size=50)(iterations = 1000)(minfreq = 5)
-registry['vectorSpace_gensim_doc2vec_100size_20iterations_2minFreq']=registry['vectorSpace_gensim_doc2vec'](size=100)(iterations = 20)(minfreq = 2)
-registry['vectorSpace_gensim_doc2vec_100size_20iterations_5minFreq']=registry['vectorSpace_gensim_doc2vec'](size=100)(iterations = 20)(minfreq = 5)
-registry['vectorSpace_gensim_doc2vec_100size_200iterations_2minFreq']=registry['vectorSpace_gensim_doc2vec'](size=100)(iterations = 200)(minfreq = 2)
-registry['vectorSpace_gensim_doc2vec_100size_200iterations_5minFreq']=registry['vectorSpace_gensim_doc2vec'](size=100)(iterations = 200)(minfreq = 5)
-registry['vectorSpace_gensim_doc2vec_100size_1000iterations_2minFreq']=registry['vectorSpace_gensim_doc2vec'](size=100)(iterations = 1000)(minfreq = 2)
-registry['vectorSpace_gensim_doc2vec_100size_1000iterations_5minFreq']=registry['vectorSpace_gensim_doc2vec'](size=100)(iterations = 1000)(minfreq = 5)
-registry['vectorSpace_gensim_doc2vec_200size_20iterations_2minFreq']=registry['vectorSpace_gensim_doc2vec'](size=200)(iterations = 20)(minfreq = 2)
-registry['vectorSpace_gensim_doc2vec_200size_20iterations_5minFreq']=registry['vectorSpace_gensim_doc2vec'](size=200)(iterations = 20)(minfreq = 5)
-registry['vectorSpace_gensim_doc2vec_200size_200iterations_2minFreq']=registry['vectorSpace_gensim_doc2vec'](size=200)(iterations = 200)(minfreq = 2)
-registry['vectorSpace_gensim_doc2vec_200size_200iterations_5minFreq']=registry['vectorSpace_gensim_doc2vec'](size=200)(iterations = 200)(minfreq = 5)
-registry['vectorSpace_gensim_doc2vec_200size_1000iterations_2minFreq']=registry['vectorSpace_gensim_doc2vec'](size=200)(iterations = 1000)(minfreq = 2)
-registry['vectorSpace_gensim_doc2vec_200size_1000iterations_5minFreq']=registry['vectorSpace_gensim_doc2vec'](size=200)(iterations = 1000)(minfreq = 5)
-registry['vectorSpace_gensim_doc2vec_300size_20iterations_2minFreq']=registry['vectorSpace_gensim_doc2vec'](size=300)(iterations = 20)(minfreq = 2)
-registry['vectorSpace_gensim_doc2vec_300size_20iterations_5minFreq']=registry['vectorSpace_gensim_doc2vec'](size=300)(iterations = 20)(minfreq = 5)
-registry['vectorSpace_gensim_doc2vec_300size_200iterations_2minFreq']=registry['vectorSpace_gensim_doc2vec'](size=300)(iterations = 200)(minfreq = 2)
-registry['vectorSpace_gensim_doc2vec_300size_200iterations_5minFreq']=registry['vectorSpace_gensim_doc2vec'](size=300)(iterations = 200)(minfreq = 5)
-registry['vectorSpace_gensim_doc2vec_300size_1000iterations_2minFreq']=registry['vectorSpace_gensim_doc2vec'](size=300)(iterations = 1000)(minfreq = 2)
-registry['vectorSpace_gensim_doc2vec_300size_1000iterations_5minFreq']=registry['vectorSpace_gensim_doc2vec'](size=300)(iterations = 1000)(minfreq = 5)
+registry['clusterer_sklearn_kmeans_5clusters']=curries['clusterer_sklearn_kmeans'](n_clusters = 5)
+registry['clusterer_sklearn_kmeans_10clusters']=curries['clusterer_sklearn_kmeans'](n_clusters = 10)
+registry['clusterer_sklearn_kmeans_20clusters']=curries['clusterer_sklearn_kmeans'](n_clusters = 20)
+registry['clusterer_sklearn_agglomerative_5clusters']=curries['clusterer_sklearn_agglomerative'](n_clusters = 5)
+registry['clusterer_sklearn_agglomerative_10clusters']=curries['clusterer_sklearn_agglomerative'](n_clusters = 10)
+registry['clusterer_sklearn_agglomerative_20clusters']=curries['clusterer_sklearn_agglomerative'](n_clusters = 20)
+registry['clusterer_sklearn_affinityPropagation_5clusters']=curries['clusterer_sklearn_affinityPropagation'](n_clusters = 5)
+registry['clusterer_sklearn_affinityPropagation_10clusters']=curries['clusterer_sklearn_affinityPropagation'](n_clusters = 10)
+registry['clusterer_sklearn_affinityPropagation_20clusters']=curries['clusterer_sklearn_affinityPropagation'](n_clusters = 20)
+registry['clusterer_sklearn_meanShift_5clusters']=curries['clusterer_sklearn_meanShift'](n_clusters = 5)
+registry['clusterer_sklearn_meanShift_10clusters']= curries['clusterer_sklearn_meanShift'](n_clusters = 10)
+registry['clusterer_sklearn_meanShift_20clusters']= curries['clusterer_sklearn_meanShift'](n_clusters = 20)
+registry['clusterer_sklearn_spectral_5clusters']= curries['clusterer_sklearn_spectral'](n_clusters = 5)
+registry['clusterer_sklearn_spectral_10clusters']= curries['clusterer_sklearn_spectral'](n_clusters = 10)
+registry['clusterer_sklearn_spectral_20clusters']= curries['clusterer_sklearn_spectral'](n_clusters = 20)
+registry['clusterer_sklearn_ward_5clusters']= curries['clusterer_sklearn_ward'](n_clusters = 5)
+registry['clusterer_sklearn_ward_10clusters']= curries['clusterer_sklearn_ward'](n_clusters = 10)
+registry['clusterer_sklearn_ward_20clusters']= curries['clusterer_sklearn_ward'](n_clusters = 20)
+registry['clusterer_sklearn_dbscan_5clusters']=curries['clusterer_sklearn_dbscan'](n_clusters = 5)
+registry['clusterer_sklearn_dbscan_10clusters']=curries['clusterer_sklearn_dbscan'](n_clusters = 10)
+registry['clusterer_sklearn_dbscan_20clusters']=curries['clusterer_sklearn_dbscan'](n_clusters = 20)
+registry['clusterer_sklearn_birch_5clusters']=curries['clusterer_sklearn_birch'](n_clusters = 5)
+registry['clusterer_sklearn_birch_10clusters']=curries['clusterer_sklearn_birch'](n_clusters = 10)
+registry['clusterer_sklearn_birch_20clusters']=curries['clusterer_sklearn_birch'](n_clusters = 20)
+registry['clusterer_sklearn_gaussian_5clusters']=curries['clusterer_sklearn_gaussian'](n_clusters = 5)
+registry['clusterer_sklearn_gaussian_10clusters']=curries['clusterer_sklearn_gaussian'](n_clusters = 10)
+registry['clusterer_sklearn_gaussian_20clusters']=curries['clusterer_sklearn_gaussian'](n_clusters = 20)
+registry['clusterer_nltk_kmeans_5clusters']=curries['clusterer_nltk_kmeans'](n_clusters = 5)
+registry['clusterer_nltk_kmeans_10clusters']=curries['clusterer_nltk_kmeans'](n_clusters = 10)
+registry['clusterer_nltk_kmeans_20clusters']=curries['clusterer_nltk_kmeans'](n_clusters = 20)
+registry['clusterer_nltk_agglomerative_5clusters']=curries['clusterer_nltk_agglomerative'](n_clusters = 5)
+registry['clusterer_nltk_agglomerative_10clusters']=curries['clusterer_nltk_agglomerative'](n_clusters = 10)
+registry['clusterer_nltk_agglomerative_20clusters']=curries['clusterer_nltk_agglomerative'](n_clusters = 20)
+registry['vectorSpace_gensim_doc2vec_50size_20iterations_2minFreq']=curries['vectorSpace_gensim_doc2vec'](size=50)(iterations = 20)(minfreq = 2)
+registry['vectorSpace_gensim_doc2vec_50size_20iterations_5minFreq']=curries['vectorSpace_gensim_doc2vec'](size=50)(iterations = 20)(minfreq = 5)
+registry['vectorSpace_gensim_doc2vec_50size_200iterations_2minFreq']=curries['vectorSpace_gensim_doc2vec'](size=50)(iterations = 200)(minfreq = 2)
+registry['vectorSpace_gensim_doc2vec_50size_200iterations_5minFreq']=curries['vectorSpace_gensim_doc2vec'](size=50)(iterations = 200)(minfreq = 5)
+registry['vectorSpace_gensim_doc2vec_50size_1000iterations_2minFreq']=curries['vectorSpace_gensim_doc2vec'](size=50)(iterations = 1000)(minfreq = 2)
+registry['vectorSpace_gensim_doc2vec_50size_1000iterations_5minFreq']=curries['vectorSpace_gensim_doc2vec'](size=50)(iterations = 1000)(minfreq = 5)
+registry['vectorSpace_gensim_doc2vec_100size_20iterations_2minFreq']=curries['vectorSpace_gensim_doc2vec'](size=100)(iterations = 20)(minfreq = 2)
+registry['vectorSpace_gensim_doc2vec_100size_20iterations_5minFreq']=curries['vectorSpace_gensim_doc2vec'](size=100)(iterations = 20)(minfreq = 5)
+registry['vectorSpace_gensim_doc2vec_100size_200iterations_2minFreq']=curries['vectorSpace_gensim_doc2vec'](size=100)(iterations = 200)(minfreq = 2)
+registry['vectorSpace_gensim_doc2vec_100size_200iterations_5minFreq']=curries['vectorSpace_gensim_doc2vec'](size=100)(iterations = 200)(minfreq = 5)
+registry['vectorSpace_gensim_doc2vec_100size_1000iterations_2minFreq']=curries['vectorSpace_gensim_doc2vec'](size=100)(iterations = 1000)(minfreq = 2)
+registry['vectorSpace_gensim_doc2vec_100size_1000iterations_5minFreq']=curries['vectorSpace_gensim_doc2vec'](size=100)(iterations = 1000)(minfreq = 5)
+registry['vectorSpace_gensim_doc2vec_200size_20iterations_2minFreq']=curries['vectorSpace_gensim_doc2vec'](size=200)(iterations = 20)(minfreq = 2)
+registry['vectorSpace_gensim_doc2vec_200size_20iterations_5minFreq']=curries['vectorSpace_gensim_doc2vec'](size=200)(iterations = 20)(minfreq = 5)
+registry['vectorSpace_gensim_doc2vec_200size_200iterations_2minFreq']=curries['vectorSpace_gensim_doc2vec'](size=200)(iterations = 200)(minfreq = 2)
+registry['vectorSpace_gensim_doc2vec_200size_200iterations_5minFreq']=curries['vectorSpace_gensim_doc2vec'](size=200)(iterations = 200)(minfreq = 5)
+registry['vectorSpace_gensim_doc2vec_200size_1000iterations_2minFreq']=curries['vectorSpace_gensim_doc2vec'](size=200)(iterations = 1000)(minfreq = 2)
+registry['vectorSpace_gensim_doc2vec_200size_1000iterations_5minFreq']=curries['vectorSpace_gensim_doc2vec'](size=200)(iterations = 1000)(minfreq = 5)
+registry['vectorSpace_gensim_doc2vec_300size_20iterations_2minFreq']=curries['vectorSpace_gensim_doc2vec'](size=300)(iterations = 20)(minfreq = 2)
+registry['vectorSpace_gensim_doc2vec_300size_20iterations_5minFreq']=curries['vectorSpace_gensim_doc2vec'](size=300)(iterations = 20)(minfreq = 5)
+registry['vectorSpace_gensim_doc2vec_300size_200iterations_2minFreq']=curries['vectorSpace_gensim_doc2vec'](size=300)(iterations = 200)(minfreq = 2)
+registry['vectorSpace_gensim_doc2vec_300size_200iterations_5minFreq']=curries['vectorSpace_gensim_doc2vec'](size=300)(iterations = 200)(minfreq = 5)
+registry['vectorSpace_gensim_doc2vec_300size_1000iterations_2minFreq']=curries['vectorSpace_gensim_doc2vec'](size=300)(iterations = 1000)(minfreq = 2)
+registry['vectorSpace_gensim_doc2vec_300size_1000iterations_5minFreq']=curries['vectorSpace_gensim_doc2vec'](size=300)(iterations = 1000)(minfreq = 5)
