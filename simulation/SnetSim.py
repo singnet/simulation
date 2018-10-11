@@ -2,6 +2,12 @@ import json
 import os
 import pickle
 import sys
+import re
+import random
+import numpy as np
+from collections import OrderedDict
+import copy
+
 
 from boltons.cacheutils import LRU
 from boltons.cacheutils import cachedmethod
@@ -10,21 +16,37 @@ from mesa.time import StagedActivation
 
 from simulation.Registry import registry
 from simulation.pickleThis import pickleThis
+from simulation.Exogenous import Exogenous
+from simulation.SISTER import SISTER
 
 
 class SnetSim(Model):
-    def __init__(self, config_path='config.json'):
-        super().__init__()
+    def __init__(self, study_path='study.json'):
+
 
         self.gepResult = None
-        with open(config_path) as json_file:
-            config = json.load(json_file)
+        with open(study_path) as json_file:
+            config = json.load(json_file, object_pairs_hook=OrderedDict)
+
+        #save the config with the output
+        filename = config['parameters']['output_path'] + study_path
+        pretty = json.dumps(config, indent=2, separators=(',', ':'))
+        with open(filename, 'w') as outfile:
+            outfile.write(pretty)
+        outfile.close()
+
         # print(json.dumps(config['ontology'], indent=2))
         self.parameters = config['parameters']
+        super().__init__(self.parameters['seed'])
+        self.reproduction_report = self.reproduction_report()
         self.blackboard = config['blackboard']
         self.ontology = config['ontology']
         self.registry = registry
-
+        self.emergent_functions = OrderedDict()
+        self.emergent_functions_arity = OrderedDict()
+        self.emergent_functions_call_number = 0
+        self.stochastic_pattern = re.compile(r'_stochastic\d+')
+        self.prefix_pattern = re.compile (r'^f\d+_')
 
         pickle_config_path = config['parameters']['output_path'] + 'pickles/' + 'index.p'
 
@@ -32,7 +54,7 @@ class SnetSim(Model):
             with open(pickle_config_path, 'rb') as cachehandle:
                 pickle_config =  pickle.load(cachehandle)
         else:
-            pickle_config = {"count": 0, "pickles": {}}
+            pickle_config = OrderedDict([("count", 0), ("pickles", OrderedDict())])
 
 
         self.pickle_count = pickle_config['count']  # contains the next number for the pickle file
@@ -48,12 +70,12 @@ class SnetSim(Model):
         # In step the agent has a chance to put out a new message given the knowledge of purchases
         # made on the last round
 
-        stage_list = ['gather_offers',
+        stage_list = ['step','gather_offers',
                       'choose_partners', 'choose_partners', 'choose_partners', 'choose_partners', 'choose_partners',
                       'choose_partners', 'choose_partners', 'choose_partners', 'choose_partners', 'choose_partners',
                       'choose_partners', 'choose_partners', 'choose_partners', 'choose_partners', 'choose_partners',
                       'choose_partners', 'choose_partners', 'choose_partners', 'choose_partners', 'choose_partners',
-                      'step'
+
                       ]
 
         self.schedule = StagedActivation(self, stage_list=stage_list, shuffle=True, shuffle_between_stages=True)
@@ -61,15 +83,18 @@ class SnetSim(Model):
         # Create agents
 
         # first initial agents then random agents
+        initial_blackboard = copy.deepcopy(self.blackboard)
+        self.blackboard = []
         agent_count = 0
-        for message in self.blackboard:
+        for i,message in enumerate(initial_blackboard):
             if message['type'] in self.parameters['agent_parameters']:
                 agent_parameters = self.parameters['agent_parameters'][message['type']]
             else:
                 agent_parameters = None
-            a = globals()[message['type']](agent_count, self, message, agent_parameters)
-            self.schedule.add(a)
-            agent_count += 1
+            for _ in range(self.parameters['blackboard_agents'][i]):
+                a = globals()[message['type']](agent_count, self, message, agent_parameters)
+                self.schedule.add(a)
+                agent_count += 1
 
         for agent_type, n in self.parameters['random_agents'].items():
             if agent_type in self.parameters['agent_parameters']:
@@ -81,15 +106,28 @@ class SnetSim(Model):
                 self.schedule.add(a)
                 agent_count += 1
 
+
+
+    def remove_suffix(self,func_name):
+        cut_tuple = func_name
+        if (func_name):
+            stochastic_suffix = self.stochastic_pattern.search( func_name)
+            if (stochastic_suffix):
+                stochastic_suffix = stochastic_suffix.group()
+                cut_tuple = func_name[:-len(stochastic_suffix)]
+        return cut_tuple
+
     @cachedmethod('cache')
     @pickleThis
     def memoise_pickle(self, tuple_key):
         result = None
+
         try:
-            if len(self.resultTuple):
-                result = self.registry[tuple_key[0]](*self.resultTuple)()
+            cut_tuple = self.remove_suffix(tuple_key[0])
+            if len(self.resultTuple) and cut_tuple:
+                result = self.registry[cut_tuple](*self.resultTuple)()
             else:
-                result = self.registry[tuple_key[0]]()
+                result = self.registry[cut_tuple]()
         except IOError as e:
             print ("I/O error({0})".format(e))
         except ValueError as e:
@@ -98,42 +136,112 @@ class SnetSim(Model):
             print ("AttributeError({0})".format(e))
         except TypeError as e:
             print ("TypeError({0})".format(e))
+        except RuntimeError as e:
+            print ("RuntimeError({0})".format(e))
+        except IndexError as e:
+            print("IndexError({0})".format(e))
         except:
             print ("Unexpected error:", sys.exc_info()[0])
             raise
 
         return result
 
+
+    def remove_prefix(self,func_name):
+        cut_tuple = func_name
+        if (func_name):
+            call_number_prefix = self.prefix_pattern.search( func_name)
+            if (call_number_prefix):
+                call_number_prefix = call_number_prefix.group()
+                cut_tuple = func_name[len(call_number_prefix):]
+        return cut_tuple
+
+
+
+    def get_call_prefix(self,func_name):
+        call_prefix = None
+        if (func_name):
+            call_number_prefix = self.prefix_pattern.search( func_name)
+            if (call_number_prefix):
+                call_prefix = call_number_prefix.group()
+        return call_prefix
+
+    def call_emergent_function(self, gep_result, root):
+        #print("SnetSim calling emergent function with root {0}  :  {1}".format(root,gep_result))
+        self.gepResult = copy.deepcopy(gep_result)
+        func_tuple = self.call_memoise_pickle(root)
+
+        #print("SnetSim called emergent function with root {0} with result {1}".format(root,func_tuple))
+        return func_tuple
+
     def call_memoise_pickle(self, root):
+# right now, self.emergentfunctions looks like:
+# 		f1: a,b,f2,c,d
+# 		f2: e,d,f3,f,g
+# 		f3: h,i,j
+#
+#You should go through the original problem that you had in the modulargep.txt file in the singularitynet directory
+#its going to be a matter of creating a registry for a functionlist on the fly from the real registry I think.
+        result = None
+        func_tuple = (None,None)
+        if root:
+            result_list = []
+            func_list = []
+            # argTuple = ()
+            if root in self.gepResult:
+                args = self.gepResult[root]
+                # argTuple = tuple(args)
+                for arg in args:
+                    temp_func_tuple, temp_result = self.call_memoise_pickle(arg)
+                    result_list.append(temp_result)
+                    func_list.append(temp_func_tuple)
+            carried_back = tuple(func_list)
+            strip_prefix = self.remove_prefix(root)
+            func_tuple = (strip_prefix, carried_back)
 
-        result_list = []
-        func_list = []
-        # argTuple = ()
-        if root in self.gepResult:
-            args = self.gepResult[root]
-            # argTuple = tuple(args)
-            for arg in args:
-                temp_func_tuple, temp_result = self.call_memoise_pickle(arg)
-                result_list.append(temp_result)
-                func_list.append(temp_func_tuple)
-        carried_back = tuple(func_list)
-        func_tuple = (root, carried_back)
-
-        self.resultTuple = tuple(result_list)  # You have to set a global to memoise and pickle correctly
-        result = self.memoise_pickle(func_tuple)
+            self.resultTuple = tuple(result_list)  # You have to set a global to memoise and pickle correctly
+            if strip_prefix is not None:
+                result = self.memoise_pickle(func_tuple)
 
         return func_tuple, result
 
+
+
+    def reproduction_report(self):
+        file = None
+        path = self.parameters['output_path'] + 'reproduction_report.csv'
+        file = open(path, "w")
+        file.write("time;agent;label;utility;agi_tokens;buyer_score;seller_score;sign_displayed\n")
+
+        return file
+
+    def print_reproduction_report_line(self, agent, utility):
+        a = self.schedule.time
+        b = agent.unique_id
+        c = agent.message['label']
+        d = utility
+        e = agent.agiTokens
+        f = agent.max_buyer_score
+        g = agent.max_seller_score
+        h = agent.message['sign']
+        self.reproduction_report.write("{0};{1};{2};{3};{4};{5};{6};{7}\n".format(a,b,c,d,e,f,g,h))
+        self.reproduction_report.flush()
+
     def print_logs(self):
         filename = self.parameters['output_path'] + "logs/log" + str(self.schedule.time) + ".txt"
+
+        pretty = json.dumps(self.blackboard, indent=2, separators=(',', ':'))
         with open(filename, 'w') as outfile:
-            json.dump(self.blackboard, outfile)
+            outfile.write(pretty)
+        outfile.close()
+            #json.dump(self.blackboard, outfile)
 
         pickle_config_path = self.parameters['output_path'] + 'pickles/' + 'index.p'
-        pickle_config = {'count':self.pickle_count, 'pickles':self.pickles}
+        pickle_config = OrderedDict ([('count',self.pickle_count), ('pickles',self.pickles)])
 
         with open(pickle_config_path, 'wb') as outfile:
             pickle.dump(pickle_config, outfile)
+        outfile.close()
 
 
     def visualize(self):
@@ -142,15 +250,19 @@ class SnetSim(Model):
 
     def step(self):
         """Advance the model by one step."""
+        print("IN SnetSim step, time "+ str(self.schedule.time))
         self.print_logs()
         # self.visualize() after learning agents are implemented
         self.schedule.step()
 
     def go(self):
         for i in range(self.parameters['max_iterations']):
+            print("iteration "+ str(i))
             self.step()
 
-if __name__ == '__main__':
-
-    snetsim = SnetSim()
+def main():
+    snetsim = SnetSim(sys.argv[1]) if len(sys.argv)>1 else SnetSim()
     snetsim.go()
+
+if __name__ == '__main__':
+    main()
