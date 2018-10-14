@@ -128,6 +128,7 @@ class SnetAgent(Agent, ABC):
         #  of the agents tradeplan. which there is overlap in price. list offers in the message, uniqueId:tradeNum
         # The lowest cosine similarity never wins, because a random cosine similarity can still be around 60,
         # and we want the ones that have learned signs to have even greater chance of succeeding.
+        print("In gather_offers," + self.b[self.unique_id]['label'])
 
         buyer_stop_codon_reached = False
         for buy in self.message['trades']:
@@ -235,14 +236,17 @@ class SnetAgent(Agent, ABC):
 
     def perform_test(self, function_list):
         score = 0
+        pickle_name = ""
 
         gepResult = self.modular_gep(function_list)  # put the ordered Dictionary in the global so a decorated function can access
         if any(gepResult.values()):
             root = next(iter(gepResult.items()))[0]
             score_tuple = self.model.call_emergent_function(gepResult,root)
+            if score_tuple and len(score_tuple) and score_tuple[0]:
+                pickle_name = score_tuple[0]
             if score_tuple and len(score_tuple) >1 and score_tuple[1]:
                 score = score_tuple[1]
-        result= (gepResult, score)
+        result= (gepResult, score, pickle_name)
         return result
 
     def clean_item_name (self,name):
@@ -389,8 +393,8 @@ class SnetAgent(Agent, ABC):
                 children = self.model.emergent_functions[function_name]
                 for child in children:
                     level = call_depth+1
-                    descendents = self.get_all_emergents_set(child, call_depth = level)
-                    emergent_subroutines.update(descendents)
+                    descendants = self.get_all_emergents_set(child, call_depth = level)
+                    emergent_subroutines.update(descendants)
                 emergent_subroutines.add(function_name)
             #print('emergent_subroutines')
             #print(emergent_subroutines)
@@ -734,10 +738,12 @@ class SnetAgent(Agent, ABC):
         # a stop in the first place of either the test or the data is a stop for all tests.
         # if the stop is midway through the test or the data, it indicates general tests or data,
         # that is, if it passes for any test or data in this category over this threshold it passes
-        max_score = 0
+        cumulative_score = 0
+        pickle_name = ""
         gepResult = None
         pass_all_tests = True
         itemlist = None
+        numtests = 0
         if offernum is not None:
             func_name = self.obtain_trade_list(buy['offers'][offernum])
             itemlist = self.model.emergent_functions[func_name]
@@ -783,7 +789,7 @@ class SnetAgent(Agent, ABC):
                                                         if (self.model.remove_suffix(program) in self.model.registry or \
                                                             program in self.model.emergent_functions)]
 
-                                        gepResult, score = self.perform_test(program_list)
+                                        gepResult, score, pickle_name = self.perform_test(program_list)
 
                                         # record the score no matter what, as feedback
                                         if 'results' not in test_dict:
@@ -795,8 +801,9 @@ class SnetAgent(Agent, ABC):
                                         seller = self.model.schedule.agents[buy['offers'][offernum]["agent"]]
                                         tradenum = buy['offers'][offernum]["trades"][0]
                                         seller.seller_score_notification(score,tradenum)
-                                        if max_score < score:
-                                            max_score = score
+
+                                        numtests += 1
+                                        cumulative_score += score
                                         test_dict['results'].append(result)
 
                                         if score is not None and score > test_dict['threshold']:
@@ -814,7 +821,8 @@ class SnetAgent(Agent, ABC):
         else:
             pass_all_tests = False
 
-        results = (pass_all_tests, gepResult, max_score)
+        final_score = cumulative_score / numtests if numtests else 0
+        results = (pass_all_tests, gepResult, final_score, pickle_name)
         return results
 
 
@@ -836,13 +844,14 @@ class SnetAgent(Agent, ABC):
                 while not found and count < len(sorted_choices):
                     winning_num = sorted_choices[count][0]
                     count+=1
-                    pass_all_tests, gepResult, max_score = self.pass_all_tests(buy, winning_num)
+                    pass_all_tests, gepResult, max_score, pickle_name = self.pass_all_tests(buy, winning_num)
                     if pass_all_tests:
                         found = True
                         buy['chosen'] = winning_num
                         sell = self.b[buy['offers'][winning_num]['agent']]['trades'][buy['offers'][winning_num]['trades'][0]]
                         buy['price'] = self.price(buy, sell)
                         buy['code']= gepResult
+                        buy['pickle']= self.model.pickles[pickle_name]
                         self.buyer_score_notification(max_score, buynum)
                         if 'distributes' in self.message and  self.message['distributes']:
                             self.distribute_funds(buy, buynum)
@@ -1244,7 +1253,7 @@ class SnetAgent(Agent, ABC):
 
                 if (mask and "trades" in mask and i < len(mask['trades']) and 'tests' in mask['trades'][i]
                         and j < len(mask['trades'][i]['tests']) and 'test' in mask['trades'][i]['tests'][j]):
-                    floats_for_item = self.floats_for_ontology_item(mask['trades'][i]['tests'][j]['test'], skip=1)
+                    floats_for_item = self.floats_for_ontology_item(mask['trades'][i]['tests'][j]['test'], skip=2)
                     ontlist = mask['trades'][i]['tests'][j]['test'].split("_")
                     for k in range(len(ontlist)-1):
                         float_vec[cursor + k] = floats_for_item[k]
@@ -1346,7 +1355,7 @@ class SnetAgent(Agent, ABC):
                         #print('float_for_stop')
                         #print(float_for_stop)
                         # The test
-                        floats_for_ontology_item = self.floats_for_ontology_item(trade_plan['trades'][i]['tests'][j]['test'], skip = 1)
+                        floats_for_ontology_item = self.floats_for_ontology_item(trade_plan['trades'][i]['tests'][j]['test'], skip = 2)
                         float_list.extend(floats_for_ontology_item)
                         #print ('floats_for_ontology_item')
                         #print(floats_for_ontology_item)
@@ -1385,3 +1394,11 @@ class SnetAgent(Agent, ABC):
         trade_plan['trades'][0]['type'] = 'stop'
 
         return trade_plan
+
+    def get_bought_items(self):
+        bought_items = OrderedDict()
+        for trade in self.message['trades']:
+            if ('code' in trade) and ('pickle' in trade) and trade['code'] and trade['pickle']:
+                bought_items[trade['pickle']] = trade['code']
+
+        return bought_items

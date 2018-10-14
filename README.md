@@ -57,11 +57,11 @@ This is the simulation that takes care of calling the agent functions, as well a
 
 SISTER.py : 
 
-An example of a community user reinforcement learning submission.  Stubbed for now, it will soon be implemented with CMA-ES.  Follow this example to instatiate your own agent.  
+An example of a community user reinforcement learning submission. Contains the CMA-ES learning algorithm.  
 
-Human.py : 
+Exogenous.py : 
 
-The human agent, that does not change its message during the simualtion run, so does not step, although step and payment_notification will soon have statistical collection decorators and visualizations to measure things humans may care about such as money spent on programs and the scores of those programs.  
+An agent that does not change its message during the simualtion run, and can be made to put predetermined message out periodically or every time.  
 
 Registry.py :
 
@@ -82,7 +82,9 @@ competing_clusterers directory is a directory of generated file, the result of t
 
 .idea directory is a pycharm ide directory, one of the best python ides to make it easy to write python code for the project
 
-simuation.ipynb is the tutorial for the simulation, an excellent starting point.
+simuation.ipynb is the first tutorial for the simulation, an excellent starting point.  Its focus is on the knowledge representation and simulation mechanics.
+
+marketplace.ipynb is the second tutorial for the simmulation, with learning CMA-ES SISTER agents creating python programs in a marketplace.  The emphasis is on market dynamics.
 
 competingClusterers.ipynb is a baseline run of the competing clusters, to see how each does on a dataset. you can put different data sets in and every clusterer will work on it, for the purpose of comparing to your solution to the competing clusterer scenario.
 
@@ -90,9 +92,9 @@ IntrnetResearchAgency.tweets.clustered is the output of the competingClusterers 
 
 study.json is a configuration of the simulation for the competing clusterers scenario, containing simulation parameters, an intial group of messages on the blackboard for intial agents, and the ontology of services that they agents can use to construct a solution.  
 
-environment.yml is the file used to install the environment of the simulation and notebook.  It contains more than the competing cluster scenario needs , for example , tensorflow and Deap, in anticipation that SnetAgent subclasses will need these packages to learn solutions.  
+environment.yaml, environment.windows.yml, requirements.txt and requirements.windows.txt are the list of python packages that need installation as required by conda and pip, in both ubuntu and windows  environments.
 
-## License  
+# License  
   
 This project is licensed under the MIT License - see the
 [LICENSE](https://github.com/singnet/alpha-daemon/blob/master/LICENSE) file for details.

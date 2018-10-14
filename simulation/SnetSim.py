@@ -106,6 +106,8 @@ class SnetSim(Model):
                 self.schedule.add(a)
                 agent_count += 1
 
+        print("Final line of snet sim init" )
+
 
 
     def remove_suffix(self,func_name):
@@ -167,11 +169,11 @@ class SnetSim(Model):
         return call_prefix
 
     def call_emergent_function(self, gep_result, root):
-        #print("SnetSim calling emergent function with root {0}  :  {1}".format(root,gep_result))
+        print("SnetSim calling emergent function with root {0}  :  {1}".format(root,gep_result))
         self.gepResult = copy.deepcopy(gep_result)
         func_tuple = self.call_memoise_pickle(root)
 
-        #print("SnetSim called emergent function with root {0} with result {1}".format(root,func_tuple))
+        print("SnetSim called emergent function with root {0} with result {1}".format(root,func_tuple))
         return func_tuple
 
     def call_memoise_pickle(self, root):
@@ -211,11 +213,11 @@ class SnetSim(Model):
         file = None
         path = self.parameters['output_path'] + 'reproduction_report.csv'
         file = open(path, "w")
-        file.write("time;agent;label;utility;agi_tokens;buyer_score;seller_score;sign_displayed\n")
+        file.write("time;agent;label;utility;agi_tokens;buyer_score;seller_score;sign_displayed;bought_items\n")
 
         return file
 
-    def print_reproduction_report_line(self, agent, utility):
+    def print_reproduction_report_line(self, agent, utility,bought_items):
         a = self.schedule.time
         b = agent.unique_id
         c = agent.message['label']
@@ -224,7 +226,9 @@ class SnetSim(Model):
         f = agent.max_buyer_score
         g = agent.max_seller_score
         h = agent.message['sign']
-        self.reproduction_report.write("{0};{1};{2};{3};{4};{5};{6};{7}\n".format(a,b,c,d,e,f,g,h))
+        i = bought_items
+
+        self.reproduction_report.write("{0};{1};{2};{3};{4};{5};{6};{7};{8}\n".format(a,b,c,d,e,f,g,h,i))
         self.reproduction_report.flush()
 
     def print_logs(self):

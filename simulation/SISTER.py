@@ -43,6 +43,8 @@ class SISTER(SnetAgent):
         self.max_buyer_score = 0
         self.max_seller_score = 0
 
+        print ("IN SISTER init,"+self.b[self.unique_id]['label'])
+
 
 
     def step(self):
@@ -55,8 +57,9 @@ class SISTER(SnetAgent):
                 + self.max_buyer_score * self.parameters['fitness_weights']['buyer_score'] \
                 + self.max_seller_score * self.parameters['fitness_weights']['seller_score']
 
+        bought_items = self.get_bought_items()
         self.results.append(result)
-        self.model.print_reproduction_report_line(self,result)
+        self.model.print_reproduction_report_line(self,result, bought_items)
 
 
         # move a cursor that tells which solution you are on.
@@ -94,7 +97,6 @@ class SISTER(SnetAgent):
         self.max_seller_score = 0
         self.set_message(new_message)
         self.float_vec = float_vec
-        #self.solutions[self.next_solution] = float_vec
 
 
     def buyer_score_notification(self, score, tradenum):

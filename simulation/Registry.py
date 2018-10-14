@@ -79,8 +79,9 @@ def test_clusterer_calinskiHarabaz(XY):
     import sklearn
     from sklearn import metrics
 
+    print('test_clusterer_calinskiHarabaz')
     min_score = 0
-    max_score = 500
+    max_score = 200
 
     calinski_harabaz = metrics.calinski_harabaz_score(X, Y)
 
@@ -214,6 +215,8 @@ def data_freetext_csvColumn(relative_path, col='text'):
 
 def data_vector_varied(n_samples=1500):
     import sklearn
+
+    print ('data_vector_varied')
     from sklearn.datasets import make_blobs
     X, Y = make_blobs(n_samples=n_samples,
                                cluster_std=[1.0, 2.5, 0.5],
@@ -224,6 +227,7 @@ def data_vector_varied(n_samples=1500):
 def data_vector_ansio(n_samples=1500):
     import sklearn
     import numpy as np
+    print ('data_vector_ansio')
     from sklearn.datasets import make_blobs
     X, y = make_blobs(n_samples=n_samples, random_state=170)
     transformation = [[0.6, -0.6], [-0.4, 0.8]]
@@ -234,6 +238,7 @@ def data_vector_ansio(n_samples=1500):
 
 def data_vector_circles(n_samples=1500):
     import sklearn
+    print ('data_vector_circles')
     from sklearn.datasets import make_circles
     X, Y = make_circles(n_samples=n_samples, factor=.5,
                         noise=.05)
@@ -242,6 +247,7 @@ def data_vector_circles(n_samples=1500):
 
 def data_vector_moons(n_samples=1500):
     import sklearn
+    print ('data_vector_moons')
     from sklearn.datasets import make_moons
     X, Y = make_moons(n_samples=n_samples, noise=.05)
     return X
@@ -249,6 +255,7 @@ def data_vector_moons(n_samples=1500):
 
 def data_vector_blobs(n_samples=1500):
     import sklearn
+    print ('data_vector_blobs')
     from sklearn.datasets import make_blobs
     X, Y = make_blobs(n_samples=n_samples, random_state=8)
     return X
@@ -290,6 +297,7 @@ def clusterer_sklearn_agglomerative(X, n_clusters):
     from sklearn.cluster import AgglomerativeClustering
     from sklearn.neighbors import kneighbors_graph
     import numpy as np
+    print('clusterer_sklearn_agglomerative')
 
     connectivity = kneighbors_graph(
         X, n_neighbors=params['n_neighbors'], include_self=False)
@@ -311,6 +319,7 @@ def clusterer_sklearn_affinityPropagation(X, n_clusters):
 
     import sklearn
     from sklearn.cluster import AffinityPropagation
+    print('clusterer_sklearn_affinityPropagation')
 
     affinity_propagation = AffinityPropagation(damping=params['damping'], preference=params['preference']).fit(
         X)
@@ -328,6 +337,7 @@ def clusterer_sklearn_meanShift(X, n_clusters):
 
     import sklearn
     from sklearn.cluster import MeanShift
+    print('clusterer_sklearn_meanShift')
 
     bandwidth = sklearn.cluster.estimate_bandwidth(X, quantile=params['quantile'])
 
@@ -347,6 +357,7 @@ def clusterer_sklearn_spectral(X, n_clusters):
     import sklearn
     from sklearn.cluster import SpectralClustering
     import numpy as np
+    print('clusterer_sklearn_spectral')
 
     spectral = SpectralClustering(
         n_clusters=params['n_clusters'], eigen_solver='arpack',
@@ -373,6 +384,7 @@ def clusterer_sklearn_ward(X, n_clusters):
     from sklearn.cluster import AgglomerativeClustering
     from sklearn.neighbors import kneighbors_graph
     import numpy as np
+    print('clusterer_sklearn_ward')
 
     connectivity = kneighbors_graph(
         X, n_neighbors=params['n_neighbors'], include_self=False)
@@ -395,6 +407,7 @@ def clusterer_sklearn_dbscan(X, n_clusters):
     import sklearn
     from sklearn.cluster import DBSCAN
     import numpy as np
+    print('clusterer_sklearn_dbscan')
 
     dbscan = DBSCAN(eps=params['eps']).fit(X)
     clusterAlgLabelAssignmentsSD = dbscan.labels_.astype(np.int)
@@ -411,6 +424,7 @@ def clusterer_sklearn_birch(X, n_clusters):
 
     import sklearn
     from sklearn.cluster import Birch
+    print('clusterer_sklearn_birch')
 
     birch = Birch(n_clusters=params['n_clusters']).fit(X)
     clusterAlgLabelAssignmentsSB = birch.predict(X)
@@ -427,6 +441,7 @@ def clusterer_sklearn_gaussian(X, n_clusters):
 
     import sklearn
     from sklearn import mixture
+    print('clusterer_sklearn_gaussian')
 
     clusterAlgSGN = mixture.GaussianMixture(n_components=params['n_clusters'], covariance_type='full').fit(X)
     clusterAlgLabelAssignmentsSGN = clusterAlgSGN.predict(X)
@@ -444,6 +459,7 @@ def clusterer_nltk_kmeans(X, n_clusters):
     import nltk
     import numpy as np
     from nltk.cluster.kmeans import KMeansClusterer
+    print('clusterer_nltk_kmeans')
 
     clusterAlgLabelAssignmentsNK=None
     #X = XY[0]
@@ -469,6 +485,8 @@ def clusterer_nltk_agglomerative(X, n_clusters):
     import nltk
     import numpy as np
     from nltk.cluster.gaac import GAAClusterer
+    print('clusterer_nltk_agglomerative')
+
     clusterAlgLabelAssignmentsNG=None
 
     #X = XY[0]
