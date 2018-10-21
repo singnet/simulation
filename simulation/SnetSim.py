@@ -30,6 +30,9 @@ class SnetSim(Model):
 
         #save the config with the output
         filename = config['parameters']['output_path'] + study_path
+        #make sure the output_path folder exists
+        if not os.path.exists(config['parameters']['output_path']):
+            os.makedirs(config['parameters']['output_path'])
         pretty = json.dumps(config, indent=2, separators=(',', ':'))
         with open(filename, 'w') as outfile:
             outfile.write(pretty)
