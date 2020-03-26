@@ -46,53 +46,53 @@ from the simulation directory, follow these steps:
 ## simulation package:
 
 
-[SnetAgent.py](simulation/SnetAgent.py)  :  
+[SnetAgent.py](simulation/SnetAgent.py):
 
-The agent our community participants subclass, in which they implement their reinforcement learning / machine learning solution to the problem of constructing python programs. They do this by implementing the step method, in which they put a message on a pubic blackboard of trades they would like to make.  If they are using machine learning methods based on vectors of floats, they may want to use the convenient SnetAgent method that translates the vector of floats to a messege, "float_vec_to_trade_plan".  They receive feedback by looking at the blackboard (in self.b), which includes their test scores and (pretend)token rewards as well as everybody elses, as it stands after their last move.  Community users can also implement a payment_notification method that will be called when individual trades in their message recieve (pretend) agi tokens, so they have the complete breakdown and not just the cummulative net return as listed on the blackboard. They should either place an initial message on the blackboard per agent through the config file, or genrate one in the __init__ funciton.  "step" and optionally "payment_notification" and __init__ are the only methods of SnetAgent that community users implement.  The step method differs from the step of the open AI gym in that the simulation calls the method, and then calls all the other agents step message before feedback is available, which is at least by the time the simulation calls the agents next step.  Another important difference from open AI gym is that since the reward depends on all the other agent's messages, the community user's algorithm will have to respond to a difficult changing utility space/moving fitness landscape. Soon, step and payment_notification will soon have convenient statistical collection decorators and visualization utilities to measure qualities such as money recieved and the scores of programs.
+Contains the agent that any participant can subclass, in which they implement their reinforcement/machine learning solution to the problem of constructing python programs. They do this by implementing the step method, in which they post a message to a public blackboard with the trades they would like to make. If they are using machine learning methods based on vectors of floats, they may want to use the convenient `SnetAgent` method `float_vec_to_trade_plan`, which translates a vector of floats to a message.  They receive feedback by looking at the blackboard (in `self.b`), which includes their test scores and (pretend) token rewards, as well as everybody else's, as it stands after their last move.  Community users can also implement a `payment_notification` method that will be called when individual trades in their message receive (pretend) AGI tokens, so they have the complete breakdown and not just the cumulative net return as listed on the blackboard. They should either place an initial message on the blackboard per agent through the `config` file, or generate one in the `__init__` funciton. `step`, `__init__`, and optionally `payment_notification` are the only methods of `SnetAgent` that community users implement. The `step` method differs from the one in the OpenAI gym in that the simulation calls the method, and then calls all the other agents `step` message before feedback is available, which is at least by the time the simulation calls the agent's next step. Another important difference from OpenAI gym is that since the reward depends on all the other agents' messages, the user's algorithm will have to respond to a difficult changing utility space/moving fitness landscape. Soon, `step` and `payment_notification` will soon include convenient statistical collection decorators and visualization utilities, to measure qualities such as money received and the scores of programs.
 
-SnetSim.py :
+[SnetSim.py](simulation/SnetSim.py):
 
-This is the simulation that takes care of calling the agent functions, as well as storage functions like memoising and pickling.  You instantiate this class and call go to run the simulation.
+This is the simulation that takes care of calling the agent functions, as well as storage functions like memorising and pickling.  The user instantiates this class and call `go` to run the simulation.
 
 
-SISTER.py : 
+[SISTER.py](simulation/SISTER.py):
 
 An example of a community user reinforcement learning submission. Contains the CMA-ES learning algorithm.  
 
-Exogenous.py : 
+[Exogenous.py](simulation/Exogenous.py): 
 
-An agent that does not change its message during the simualtion run, and can be made to put predetermined message out periodically or every time.  
+An agent that does not change its message during the simualation run, and can be made to post a predetermined message out periodically or every time.  
 
-Registry.py :
+[Registry.py](simulation/Registry.py):
 
-This is the place where services which the simulation uses to compose solutions are indicated, as functions, and where the registry, in the form of a dictionary that points to these functions, as well as their curried versions, is kept. 
+This is the place where services which the simulation uses to compose solutions are indicated, as functions. The registry is also kept here, in the form of a dictionary that points to these functions, as well as their curried versions. 
 
-pickleThis.py : 
+[pickleThis.py](simulation/pickleThis.py):
 
-This is the pickle decorator that maps a tuple represetnation of a curried functions to a pickle of the result of the run of those functions.
+This is the pickle decorator that maps a tuple representation of a curried function to a pickle of the result of the run of those functions.
 
-__init__.py :  file used by python minstallation programs to install the simulation package
+[\_\_init\_\_.py](simulation/__init__.py): 
+
+File used by python installation programs to install the simulation package.
 
 
-# other folders and files :
+## other folders and files :
 
-data directory holds data used by the competing clusterer scneario
+The [data](data) directory holds data used by the competing clusterer scenario.
 
-competing_clusterers directory is a directory of generated file, the result of the 10 iteration run of the simulation that was performed by the simulation.ipynb notebook. 
+[competing_clusterers](competing_clusterers) is a directory of generated files: the result of running the simulation for 10 iterations, that was performed by the [simulation.ipynb](simulation.ipynb) notebook. 
 
-.idea directory is a pycharm ide directory, one of the best python ides to make it easy to write python code for the project
+[simuation.ipynb](simulation.ipynb) is the first tutorial for the `simulation` package, an excellent starting point.  It focuses on the knowledge representation and simulation mechanics.
 
-simuation.ipynb is the first tutorial for the simulation, an excellent starting point.  Its focus is on the knowledge representation and simulation mechanics.
+[marketplace.ipynb](marketplace.ipynb) is the second tutorial for the `simulation` package, with learning CMA-ES SISTER agents creating python programs in a marketplace.  The emphasis is on market dynamics.
 
-marketplace.ipynb is the second tutorial for the simmulation, with learning CMA-ES SISTER agents creating python programs in a marketplace.  The emphasis is on market dynamics.
+[competingClusterers.ipynb](competingClusterers.ipynb) is a baseline run of the competing clusterers, to compare their performance on a dataset. You can add different datasets and every clusterer will work on it, for the purpose of comparing your solution to the competing clusterer scenario.
 
-competingClusterers.ipynb is a baseline run of the competing clusters, to see how each does on a dataset. you can put different data sets in and every clusterer will work on it, for the purpose of comparing to your solution to the competing clusterer scenario.
+[InternetResearchAgency_tweets.clustered.csv](InternetResearchAgency_tweets.clustered.csv) is the output of the competingClusterers notebook.
 
-IntrnetResearchAgency.tweets.clustered is the output of the competingClusterers notebook.
+[study.json](study.json) is a configuration of the simulation for the competing clusterers scenario, containing simulation parameters, an intial group of messages on the blackboard for initial agents, and the ontology of services that the agents can use to construct a solution.  
 
-study.json is a configuration of the simulation for the competing clusterers scenario, containing simulation parameters, an intial group of messages on the blackboard for intial agents, and the ontology of services that they agents can use to construct a solution.  
-
-environment.yaml, environment.windows.yml, requirements.txt and requirements.windows.txt are the list of python packages that need installation as required by conda and pip, in both ubuntu and windows  environments.
+[environment.yaml](environment.yaml), [environment.windows.yml](environment.windows.yml), [requirements.txt](requirements.txt) and [requirements.windows.txt](requirements.windows.txt) are the list of python packages that need installation as required by conda and pip, in both ubuntu and windows  environments.
 
 # License  
   
