@@ -4,11 +4,11 @@ This project contains the Singularity Net simulation package, an arena much like
 
 Agents can create python programs because the representation of the python program has a gradient on which machine learning and reinforcement learning algorithms can navigate.  This gradient comes from the generalities and specifics described in an ontology of available services, in a linear representation with genetic markers to control the meanings of genes so that they form a gradient.  Agents self organize into specialist  modules with a natural market based price. More importantly, gradient comes from the representations that agents create of the offers in utility space, so that covolutionary selective pressure is concentrated on agents according to the signs they display, which come to have an emergent meaning.  An even more important source of gradient is the diverse ecosystem of solutions, where simple problems scaffold agents with the experience they need for more complex problems.
 
-An (outdated) spec for the project is at:  https://docs.google.com/document/d/1ZLcE4ekemPnplHUiE1Q4sHxlFZO3MQAdkWFEUUPcN3I/edit?usp=sharing
+Here's an (outdated) [spec for the project](https://docs.google.com/document/d/1ZLcE4ekemPnplHUiE1Q4sHxlFZO3MQAdkWFEUUPcN3I/edit?usp=sharing).
 
-There is a Singularity Net blog about the project.
+We wrote a SingularityNet [blog post](https://blog.singularitynet.io/singularitynets-first-simulation-is-open-to-the-community-37445cb81bc4) about the project as well.
 
-A tutorial on the simulation is in the simulation.ipynb notebook.  
+This repository contains a Jupyter notebook [tutorial](simulation.ipynb) to learn the basics of the project.  
 
 Please send a note to have your solutions added to the registry.  Because this is a multiple agent program, it can work in conjunction with other solutions in an ensemble.       
 
