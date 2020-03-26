@@ -75,6 +75,7 @@ This is the pickle decorator that maps a tuple representation of a curried funct
 
 File used by python installation programs to install the simulation package.
 
+*****************
 
 ## other folders and files :
 
@@ -94,6 +95,7 @@ The [data](data) directory holds data used by the competing clusterer scenario.
 
 [environment.yaml](environment.yaml), [environment.windows.yml](environment.windows.yml), [requirements.txt](requirements.txt) and [requirements.windows.txt](requirements.windows.txt) are the list of python packages that need installation as required by conda and pip, in both ubuntu and windows  environments.
 
+*****************
 # License  
   
 This project is licensed under the MIT License - see the
