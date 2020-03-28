@@ -1,12 +1,12 @@
-# simulation
+# SingularityNET simulation
 
-This project contains the SingularityNet simulation package, an arena much like OpenAI gym in which developers can submit machine learning and reinforcement learning solutions to a problem to test their algorithms.  However, in this case, the environment is not Atari but a toy SingularityNet environment, and the task is not to play a game but to build solutions to problems out of AI services.  Similarly to OpenAI Gym, the user only needs to write the step function of the subclassed `SnetAgent`, and optionlly handle a call to `payment_notification` when their agent is paid in pretend AGI tokens.  The simulation calls the step function of agents, waiting for all agents to move before they are notified .  The agents can examine a log of what has changed in their environment, including thier own rewards (as they define them), before taking the next step.
+This project contains the SingularityNET simulation package, an arena much like OpenAI gym in which developers can submit machine learning and reinforcement learning solutions to a problem to test their algorithms.  However, in this case, the environment is not Atari but a toy SingularityNET environment, and the task is not to play a game but to build solutions to problems out of AI services.  Similarly to OpenAI Gym, the user only needs to write the step function of the subclassed `SnetAgent`, and optionlly handle a call to `payment_notification` when their agent is paid in pretend AGI tokens.  The simulation calls the step function of agents, waiting for all agents to move before they are notified .  The agents can examine a log of what has changed in their environment, including thier own rewards (as they define them), before taking the next step.
 
 Agents can create python programs because the representation of the python program has a gradient on which machine learning and reinforcement learning algorithms can navigate.  This gradient comes from the generalities and specifics described in an ontology of available services, in a linear representation with genetic markers to control the meanings of genes so that they form a gradient.  Agents self organize into specialist  modules with a natural market based price. More importantly, gradient comes from the representations that agents create of the offers in utility space, so that covolutionary selective pressure is concentrated on agents according to the signs they display, which come to have an emergent meaning.  An even more important source of gradient is the diverse ecosystem of solutions, where simple problems scaffold agents with the experience they need for more complex problems.
 
 [Here's](https://docs.google.com/document/d/1ZLcE4ekemPnplHUiE1Q4sHxlFZO3MQAdkWFEUUPcN3I/edit?usp=sharing) an (outdated) spec for the project.
 
-We wrote a SingularityNet [blog post](https://blog.singularitynet.io/singularitynets-first-simulation-is-open-to-the-community-37445cb81bc4) about the project as well.
+We wrote a SingularityNET [blog post](https://blog.singularitynet.io/singularitynets-first-simulation-is-open-to-the-community-37445cb81bc4) about the project as well.
 
 This repository contains a Jupyter notebook [tutorial](simulation.ipynb) to learn the basics of the project.  
 
@@ -77,7 +77,7 @@ File used by python installation programs to install the simulation package.
 
 *****************
 
-## other folders and files :
+## Other folders and files :
 
 The [data](data) directory holds data used by the competing clusterer scenario.
 
