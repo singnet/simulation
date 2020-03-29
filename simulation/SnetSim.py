@@ -21,7 +21,7 @@ from simulation.SISTER import SISTER
 
 
 class SnetSim(Model):
-    def __init__(self, study_path='study.json'):
+    def __init__(self, study_path='config.json'):
 
 
         self.gepResult = None
