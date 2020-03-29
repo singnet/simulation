@@ -35,7 +35,6 @@ class SnetSim(Model):
         pretty = json.dumps(config, indent=2, separators=(',', ':'))
         with open(filename, 'w') as outfile:
             outfile.write(pretty)
-        outfile.close()
 
         # print(json.dumps(config['ontology'], indent=2))
         self.parameters = config['parameters']
@@ -234,12 +233,13 @@ class SnetSim(Model):
         self.reproduction_report.flush()
 
     def print_logs(self):
-        filename = self.parameters['output_path'] + "logs/log" + str(self.schedule.time) + ".txt"
-
+        logpath = self.parameters['output_path'] + "logs/"
+        filename = logpath + "log" + str(self.schedule.time) + ".txt"
+        if not os.path.exists(logpath):
+            os.makedirs(logpath)
         pretty = json.dumps(self.blackboard, indent=2, separators=(',', ':'))
         with open(filename, 'w') as outfile:
             outfile.write(pretty)
-        outfile.close()
             #json.dump(self.blackboard, outfile)
 
         pickle_config_path = self.parameters['output_path'] + 'pickles/' + 'index.p'
@@ -247,7 +247,6 @@ class SnetSim(Model):
 
         with open(pickle_config_path, 'wb') as outfile:
             pickle.dump(pickle_config, outfile)
-        outfile.close()
 
 
     def visualize(self):
