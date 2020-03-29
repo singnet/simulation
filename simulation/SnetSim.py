@@ -21,15 +21,17 @@ from simulation.SISTER import SISTER
 
 
 class SnetSim(Model):
-    def __init__(self, study_path='config.json'):
-
+    def __init__(self, study_path='study.json'):
 
         self.gepResult = None
         with open(study_path) as json_file:
             config = json.load(json_file, object_pairs_hook=OrderedDict)
 
         #save the config with the output
-        filename = config['parameters']['output_path'] + study_path
+        outpath = config['paremeters']['output_path']
+        if not os.path.exists(outpath):
+            os.makedirs(outpath)
+        filename = outpath + study_path
         pretty = json.dumps(config, indent=2, separators=(',', ':'))
         with open(filename, 'w') as outfile:
             outfile.write(pretty)
@@ -86,7 +88,7 @@ class SnetSim(Model):
         initial_blackboard = copy.deepcopy(self.blackboard)
         self.blackboard = []
         agent_count = 0
-        for i,message in enumerate(initial_blackboard):
+        for i, message in enumerate(initial_blackboard):
             if message['type'] in self.parameters['agent_parameters']:
                 agent_parameters = self.parameters['agent_parameters'][message['type']]
             else:
