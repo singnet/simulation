@@ -11,6 +11,7 @@
 		"min_token_price":1, 
 		"max_token_price":100,
 		"max_iterations": 10,
+		"seed": 5,
 
 		"agent_parameters":{"SISTER": 
 					{"num_chromosomes":100,
