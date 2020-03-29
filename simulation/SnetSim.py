@@ -28,7 +28,7 @@ class SnetSim(Model):
             config = json.load(json_file, object_pairs_hook=OrderedDict)
 
         #save the config with the output
-        outpath = config['paremeters']['output_path']
+        outpath = config['parameters']['output_path']
         if not os.path.exists(outpath):
             os.makedirs(outpath)
         filename = outpath + study_path
@@ -233,18 +233,21 @@ class SnetSim(Model):
         self.reproduction_report.flush()
 
     def print_logs(self):
-        logpath = self.parameters['output_path'] + "logs/"
-        filename = logpath + "log" + str(self.schedule.time) + ".txt"
-        if not os.path.exists(logpath):
-            os.makedirs(logpath)
+        log_path = self.parameters['output_path'] + "logs/"
+        filename = log_path + "log" + str(self.schedule.time) + ".txt"
+        if not os.path.exists(log_path):
+            os.makedirs(log_path)
         pretty = json.dumps(self.blackboard, indent=2, separators=(',', ':'))
         with open(filename, 'w') as outfile:
             outfile.write(pretty)
             #json.dump(self.blackboard, outfile)
 
-        pickle_config_path = self.parameters['output_path'] + 'pickles/' + 'index.p'
-        pickle_config = OrderedDict ([('count',self.pickle_count), ('pickles',self.pickles)])
+        pickle_path = self.parameters['output_path'] + 'pickles/'
+        pickle_config_path = pickle_path + 'index.p'
+        pickle_config = OrderedDict([('count', self.pickle_count), ('pickles', self.pickles)])
 
+        if not os.path.exists(pickle_path):
+            os.makedirs(pickle_path)
         with open(pickle_config_path, 'wb') as outfile:
             pickle.dump(pickle_config, outfile)
 
