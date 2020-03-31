@@ -166,6 +166,7 @@ dependencies:
   - pango=1.41.0=hd475d92_0
   - parso=0.2.0=py36_0
   - partd=0.3.8=py36h36fd896_0
+  - pattern=2.6
   - patchelf=0.9=hf79760b_2
   - path.py=11.0.1=py36_0
   - pathlib2=2.3.2=py36_0
