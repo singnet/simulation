@@ -256,7 +256,7 @@ class SnetSim(Model):
 
 
 def main():
-    snetsim = SnetSim(sys.argv[1]) if len(sys.argv)> 1 else SnetSim()
+    snetsim = SnetSim(sys.argv[1]) if len(sys.argv) > 1 else SnetSim()
     snetsim.go()
 
 
