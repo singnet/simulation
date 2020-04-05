@@ -14,7 +14,8 @@ from mesa.time import StagedActivation
 
 from simulation.Registry import registry
 from simulation.pickleThis import pickleThis
-
+from simulation.Exogenous import Exogenous
+from simulation.SISTER import SISTER
 
 class SnetSim(Model):
     def __init__(self, study_path='study.json'):
