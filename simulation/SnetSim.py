@@ -6,7 +6,6 @@ import re
 from collections import OrderedDict
 import copy
 
-
 from boltons.cacheutils import LRU
 from boltons.cacheutils import cachedmethod
 from mesa import Model
@@ -17,14 +16,18 @@ from simulation.pickleThis import pickleThis
 from simulation.Exogenous import Exogenous
 from simulation.SISTER import SISTER
 
+
 class SnetSim(Model):
     def __init__(self, study_path='study.json'):
-
-        self.gepResult = None
+        # Get data from config file
         with open(study_path) as json_file:
             config = json.load(json_file, object_pairs_hook=OrderedDict)
+        self.parameters = config['parameters']
+        super().__init__(self.parameters['seed'])
+        self.blackboard = config['blackboard']
+        self.ontology = config['ontology']
 
-        # Save the config with the output
+        # Copy config file to output folder
         outpath = config['parameters']['output_path']
         if not os.path.exists(outpath):
             os.makedirs(outpath)
@@ -33,27 +36,23 @@ class SnetSim(Model):
         with open(filename, 'w') as outfile:
             outfile.write(pretty)
 
-        # print(json.dumps(config['ontology'], indent=2))
-        self.parameters = config['parameters']
-        super().__init__(self.parameters['seed'])
-        self.reproduction_report = self.reproduction_report()
-        self.blackboard = config['blackboard']
-        self.ontology = config['ontology']
+        # Initialize class attributes
+        self.gepResult = None
         self.registry = registry
+        self.reproduction_report = self.reproduction_report()
         self.emergent_functions = OrderedDict()
         self.emergent_functions_arity = OrderedDict()
         self.emergent_functions_call_number = 0
         self.stochastic_pattern = re.compile(r'_stochastic\d+')
         self.prefix_pattern = re.compile(r'^f\d+_')
 
+        # Pickling parameters
         pickle_config_path = config['parameters']['output_path'] + 'pickles/' + 'index.p'
-
         if pickle_config_path and os.path.exists(pickle_config_path):
             with open(pickle_config_path, 'rb') as cachehandle:
                 pickle_config = pickle.load(cachehandle)
         else:
             pickle_config = OrderedDict([("count", 0), ("pickles", OrderedDict())])
-
         self.pickle_count = pickle_config['count']  # contains the next number for the pickle file
         self.pickles = pickle_config['pickles']
 
@@ -66,7 +65,6 @@ class SnetSim(Model):
         # chance to be settled in multiple trades, or offer networks have a chance to be filled.
         # In `step`, the agent has a chance to put out a new message given the knowledge of purchases
         # made on the last round.
-
         stage_list = ['step', 'gather_offers',
                       'choose_partners', 'choose_partners', 'choose_partners', 'choose_partners', 'choose_partners',
                       'choose_partners', 'choose_partners', 'choose_partners', 'choose_partners', 'choose_partners',
