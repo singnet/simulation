@@ -88,10 +88,6 @@ The [data](data) directory holds data used by the competing clusterer scenario.
 
 [marketplace.ipynb](marketplace.ipynb) is the second tutorial for the `simulation` package, with learning CMA-ES SISTER agents creating python programs in a marketplace.  The emphasis is on market dynamics.
 
-[competingClusterers.ipynb](competingClusterers.ipynb) is a baseline run of the competing clusterers, to compare their performance on a dataset. You can add different datasets and every clusterer will work on it, for the purpose of comparing your solution to the competing clusterer scenario.
-
-[InternetResearchAgency_tweets.clustered.csv](InternetResearchAgency_tweets.clustered.csv) is the output of the competingClusterers notebook.
-
 [study.json](study.json) is a configuration of the simulation for the competing clusterers scenario, containing simulation parameters, an intial group of messages on the blackboard for initial agents, and the ontology of services that the agents can use to construct a solution.  
 
 [environment.yaml](environment.yaml), [environment.windows.yml](environment.windows.yml), [requirements.txt](requirements.txt) and [requirements.windows.txt](requirements.windows.txt) are the list of python packages that need installation as required by conda and pip, in both ubuntu and windows  environments.
