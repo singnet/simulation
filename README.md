@@ -1,17 +1,10 @@
 # SingularityNET simulation
 
 
-This project contains the SingularityNET simulation package, an arena much like OpenAI Gym in which developers can submit machine learning and reinforcement learning solutions to a problem to test their algorithms.
-However, in this case, the environment is not Atari but a toy SingularityNET environment, and the task is not to play a game but to build solutions to problems out of AI services.
-Similarly to OpenAI Gym, the user only needs to write the step function of the subclassed `SnetAgent`, and optionally handle a call to `payment_notification` when their agent is paid in pretend AGI tokens.
-The simulation calls the step function of agents, waiting for all agents to move before they are notified.
-The agents can examine a log of what has changed in their environment, including thier own rewards (as they define them), before taking the next step.
 
-Agents can create Python programs because their representation in the simulation has a gradient, on which machine learning and reinforcement learning algorithms can navigate.
-Such gradient comes from the generalities and specifics described in an ontology of available services, in a linear representation with genetic markers to control the meanings of genes so that they form a gradient.
-Agents can self-organize into specialist modules with a natural market based price.
-More importantly, gradient comes from the representations that agents create of the offers in utility space, so that covolutionary selective pressure is concentrated on agents according to the signs they display, thus acquiring an emergent meaning.
-An even more important source of gradient is the diverse ecosystem of solutions, where simple problems scaffold agents with the experience they need for more complex problems.
+This project contains the SingularityNET simulation package, an arena much like OpenAI gym in which developers can submit machine learning and reinforcement learning solutions to a problem to test their algorithms.  However, in this case, the environment is not Atari but a toy SingularityNET environment, and the task is not to play a game but to build solutions to problems out of AI services.  Similarly to OpenAI Gym, the user only needs to write the step function of the subclassed `SnetAgent`, and optionlly handle a call to `payment_notification` when their agent is paid in pretend AGI tokens.  The simulation calls the step function of agents, waiting for all agents to move before they are notified .  The agents can examine a log of what has changed in their environment, including thier own rewards (as they define them), before taking their next step.
+
+Agents can create python programs because the representation of the python program has a gradient on which machine learning and reinforcement learning algorithms can navigate.  This gradient comes from the generalities and specifics described in an ontology of available services, in a linear representation with genetic markers to control the meanings of genes so that they form a gradient.  Agents self organize into specialist  modules with a natural market based price. More importantly, gradient comes from the representations that agents create of the offers in utility space, so that covolutionary selective pressure is concentrated on agents according to the signs they display, which come to have an emergent meaning.  An even more important source of gradient is the diverse ecosystem of solutions, where simple problems scaffold agents with the experience they need for more complex problems.
 
 [Here's](https://docs.google.com/document/d/1ZLcE4ekemPnplHUiE1Q4sHxlFZO3MQAdkWFEUUPcN3I/edit?usp=sharing) an (outdated) spec for the project.
 
@@ -120,11 +113,6 @@ It focuses on the knowledge representation and simulation mechanics.
 
 [marketplace.ipynb](marketplace.ipynb) is the second tutorial for the `simulation` package, with learning CMA-ES SISTER agents creating python programs in a marketplace.
 Its emphasis is on market dynamics.
-
-[competingClusterers.ipynb](competingClusterers.ipynb) is a baseline run of the competing clusterers, to compare their performance on a dataset.
-You can add different datasets and every clusterer will work on it, for the purpose of comparing your solution to the competing clusterer scenario.
-
-[InternetResearchAgency_tweets.clustered.csv](InternetResearchAgency_tweets.clustered.csv) is the output of the competingClusterers notebook.
 
 [study.json](study.json) is a configuration of the simulation for the competing clusterers scenario, containing simulation parameters, an intial group of messages on the blackboard for initial agents, and the ontology of services that the agents can use to construct a solution.  
 

@@ -36,7 +36,7 @@ clyent==1.2.2
 cma==2.6.0
 colorama==0.3.9
 contextlib2==0.5.5
-cryptography==2.2.2
+cryptography==2.3
 csvkit==1.0.3
 cycler==0.10.0
 Cython==0.28.2
@@ -171,7 +171,7 @@ QtAwesome==0.4.4
 qtconsole==4.3.1
 QtPy==1.4.1
 requests==2.20.0
-rope==0.10.7
+rope==0.11.0
 ruamel-yaml==0.15.46
 s3transfer==0.1.13
 scikit-image==0.13.1
