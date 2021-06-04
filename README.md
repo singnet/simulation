@@ -114,7 +114,7 @@ It focuses on the knowledge representation and simulation mechanics.
 [marketplace.ipynb](marketplace.ipynb) is the second tutorial for the `simulation` package, with learning CMA-ES SISTER agents creating python programs in a marketplace.
 Its emphasis is on market dynamics.
 
-[study.json](study.json) is a configuration of the simulation for the competing clusterers scenario, containing simulation parameters, an intial group of messages on the blackboard for initial agents, and the ontology of services that the agents can use to construct a solution.  
+[config.json](config.json) is a configuration of the simulation for the competing clusterers scenario, containing simulation parameters, an intial group of messages on the blackboard for initial agents, and the ontology of services that the agents can use to construct a solution.  
 
 [environment.yaml](environment.yaml), [environment.windows.yml](environment.windows.yml), [requirements.txt](requirements.txt) and [requirements.windows.txt](requirements.windows.txt) are the list of python packages that need installation as required by conda and pip, in both ubuntu and windows  environments.
 
