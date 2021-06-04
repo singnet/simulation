@@ -17,5 +17,7 @@ tensorflow
 tensorflow-gpu
 textblob
 tqdm
+gzip
+shutil
 git+git://github.com/pattern3/pattern.git
 
