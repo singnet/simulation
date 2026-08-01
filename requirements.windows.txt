@@ -163,7 +163,7 @@ python-slugify==1.2.5
 pytimeparse==1.1.8
 pytz==2018.5
 PyWavelets==0.5.2
-pywin32==223
+pywin32==301
 pywinpty==0.5.4
 PyYAML==5.4
 pyzmq==17.0.0
